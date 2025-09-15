@@ -7,7 +7,7 @@ export class ProfilesController {
   }
 
   @Get()
-  getHello(): string {
+  getHello(): Promise<string> {
     return this.profilesService.getHello();
   }
 }
