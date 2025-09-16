@@ -19,6 +19,15 @@
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     },
+    "photos": {
+      "type": "library",
+      "root": "libs/photos",
+      "entryFile": "index",
+      "sourceRoot": "libs/photos/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/photos/tsconfig.lib.json"
+      }
+    },
     "profiles": {
       "type": "application",
       "root": "apps/profiles",

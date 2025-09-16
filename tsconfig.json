@@ -27,6 +27,12 @@
       ],
       "@app/common/*": [
         "libs/common/src/*"
+      ],
+      "@app/photos": [
+        "libs/photos/src"
+      ],
+      "@app/photos/*": [
+        "libs/photos/src/*"
       ]
     }
   }

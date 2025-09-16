@@ -1,8 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { ProfilesModule } from './profiles.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { ReflectionService } from '@grpc/reflection';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ProfilesModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    ProfilesModule,
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: 'profiles',
+        protoPath: 'libs/photos/src/profiles.proto',
+        url: `localhost:${process.env.PORT}`,
+        onLoadPackageDefinition: (pkg, server) => {
+          new ReflectionService(pkg).addToServer(server);
+        },
+      },
+    },
+  );
+  await app.listen();
 }
 bootstrap();
