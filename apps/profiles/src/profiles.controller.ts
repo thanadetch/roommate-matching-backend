@@ -18,13 +18,7 @@ export class ProfilesController {
   }
 
   @GrpcMethod('ProfilesService', 'UpdateProfile')
-  updateProfile({
-    id,
-    data,
-  }: {
-    id: string;
-    data: Prisma.ProfileUpdateInput;
-  }): Promise<Profile> {
-    return this.profilesService.updateProfile(id, data);
+  updateProfile(data: Prisma.ProfileUpdateInput): Promise<Profile> {
+    return this.profilesService.updateProfile(data.id as string, data);
   }
 }
