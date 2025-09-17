@@ -6,12 +6,6 @@ import { Profile } from '../generated/prisma';
 export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
-  async getHello(): Promise<string> {
-    const results = await this.prisma.profile.findMany();
-    console.log(results);
-    return 'Hello World Profiles!';
-  }
-
   async getProfiles(): Promise<{ results: Profile[] }> {
     const results = await this.prisma.profile.findMany();
     return { results };
