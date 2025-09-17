@@ -23,7 +23,7 @@ message Profile {
     string email = 2;
     string passwordHash = 3;
     string name = 4;
-    Gender gender = 5;
+    string gender = 5;
     int32 budgetMin = 6;
     int32 budgetMax = 7;
     string preferredArea = 8;
@@ -32,11 +32,6 @@ message Profile {
     string contactEmail = 11;
     string createdAt = 12;
     string updatedAt = 13;
-}
-
-enum Gender {
-    MALE = 0;
-    FEMALE = 1;
 }
 
 message Empty {}
