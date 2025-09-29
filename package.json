@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "start:api-gateway": "nest start api-gateway --watch",
     "start:profiles": "nest start profiles --watch",
     "prisma:profiles:generate": "dotenv -e apps/profiles/.env -- prisma generate --schema=./apps/profiles/prisma/schema.prisma",
     "prisma:profiles:migrate": "dotenv -e apps/profiles/.env -- prisma migrate dev --schema=./apps/profiles/prisma/schema.prisma",
@@ -31,9 +32,12 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/microservices": "^11.1.6",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.16.1",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.9",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
