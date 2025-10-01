@@ -55,6 +55,24 @@
         "tsConfigPath": "apps/profiles/tsconfig.app.json"
       }
     },
+    "reviews": {
+      "type": "application",
+      "root": "apps/reviews",
+      "entryFile": "main",
+      "sourceRoot": "apps/reviews/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/reviews/tsconfig.app.json"
+      }
+    },
+    "roommate-matching": {
+      "type": "application",
+      "root": "apps/roommate-matching",
+      "entryFile": "main",
+      "sourceRoot": "apps/roommate-matching/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/roommate-matching/tsconfig.app.json"
+      }
+    },
     "rooms": {
       "type": "application",
       "root": "apps/rooms",

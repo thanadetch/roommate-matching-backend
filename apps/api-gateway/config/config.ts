@@ -1,3 +1,4 @@
 export const config = {
-  roomPort: process.env.ROOM_PORT ? +process.env.ROOM_PORT : 3001,
+  rabbitmqUrl: process.env.RABBITMQ_URL || '',
+  roomQueueName: process.env.ROOM_QUEUE_NAME || 'rooms_queue',
 };

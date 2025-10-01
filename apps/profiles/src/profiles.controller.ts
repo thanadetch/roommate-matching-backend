@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
-import { GrpcMethod } from '@nestjs/microservices';
 import { Profile, Prisma } from '../generated/prisma';
+import { GrpcMethod } from '@nestjs/microservices';
 
 @Controller()
 export class ProfilesController {

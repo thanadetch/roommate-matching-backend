@@ -9,7 +9,7 @@ async function bootstrap() {
       transport: Transport.RMQ,
       options: {
         urls: [process.env.RABBITMQ_URL || ''],
-        queue: 'rooms_queue',
+        queue: process.env.QUEUE_NAME,
       },
     },
   );
