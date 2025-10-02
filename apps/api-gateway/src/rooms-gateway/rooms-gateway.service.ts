@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
-export class RoomsService {
+export class RoomsGatewayService {
   constructor(
     @Inject('ROOMS_SERVICE') private readonly roomsClient: ClientProxy,
   ) {}

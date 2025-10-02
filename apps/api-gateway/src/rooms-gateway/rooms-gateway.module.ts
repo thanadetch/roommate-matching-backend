@@ -1,28 +1,28 @@
 import { Module } from '@nestjs/common';
-import { ReviewsService } from './reviews.service';
-import { ReviewsController } from './reviews.controller';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { config } from '../../config/config';
+import { RoomsGatewayService } from './rooms-gateway.service';
+import { RoomsGatewayController } from './rooms-gateway.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
+    ConfigModule,
     ClientsModule.registerAsync([
       {
-        name: 'REVIEWS_SERVICE',
+        name: 'ROOMS_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
             urls: [config.get<string>('RABBITMQ_URL', '')],
-            queue: config.get<string>('REVIEWS_QUEUE_NAME', 'reviews_queue'),
+            queue: config.get<string>('ROOM_QUEUE_NAME', 'rooms_queue'),
           },
         }),
       },
     ]),
   ],
-  controllers: [ReviewsController],
-  providers: [ReviewsService],
+  controllers: [RoomsGatewayController],
+  providers: [RoomsGatewayService],
 })
-export class ReviewsModule {}
+export class RoomsGatewayModule {}

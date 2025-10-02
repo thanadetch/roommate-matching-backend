@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ProfilesService } from './profiles.service';
-import { ProfilesController } from './profiles.controller';
+import { ProfilesGatewayService } from './profiles-gateway.service';
+import { ProfilesGatewayController } from './profiles-gateway.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     ClientsModule.registerAsync([
       {
         name: 'PROFILES_PACKAGE',
@@ -22,7 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
     ]),
   ],
-  controllers: [ProfilesController],
-  providers: [ProfilesService],
+  controllers: [ProfilesGatewayController],
+  providers: [ProfilesGatewayService],
 })
-export class ProfilesModule {}
+export class ProfilesGatewayModule {}

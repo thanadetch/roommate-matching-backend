@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { NotificationsService } from './notifications.service';
-import { NotificationsController } from './notifications.controller';
+import { RoommateMatchingGatewayService } from './roommate-matching-gateway.service';
+import { RoommateMatchingGatewayController } from './roommate-matching-gateway.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { config } from '../../config/config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     ClientsModule.registerAsync([
       {
-        name: 'NOTIFICATIONS_SERVICE',
+        name: 'ROOMMATE_MATCHING_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => ({
@@ -17,15 +17,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           options: {
             urls: [config.get<string>('RABBITMQ_URL', '')],
             queue: config.get<string>(
-              'NOTIFICATIONS_QUEUE_NAME',
-              'notifications_queue',
+              'ROOMMATE_MATCHING_QUEUE_NAME',
+              'roommate_matching_queue',
             ),
           },
         }),
       },
     ]),
   ],
-  controllers: [NotificationsController],
-  providers: [NotificationsService],
+  controllers: [RoommateMatchingGatewayController],
+  providers: [RoommateMatchingGatewayService],
 })
-export class NotificationsModule {}
+export class RoommateMatchingGatewayModule {}
