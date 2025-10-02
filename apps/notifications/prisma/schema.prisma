@@ -10,6 +10,32 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+enum NotificationType {
+  INTEREST_REQUEST
+  MATCH_FOUND
+  MESSAGE
+  REVIEW
+  REMINDER
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+}
+
+model Notification {
+  id     String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId String
+  type   NotificationType
+  status NotificationStatus @default(UNREAD)
+
+  title   String
+  message String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

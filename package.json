@@ -17,7 +17,7 @@
     "prisma:rooms:migrate": "dotenv -e apps/rooms/.env -- prisma migrate dev --schema=./apps/rooms/prisma/schema.prisma",
     "start:notifications": "nest start notifications --watch",
     "prisma:notifications:generate": "dotenv -e apps/notifications/.env -- prisma generate --schema=./apps/notifications/prisma/schema.prisma",
-    "prisma:notifications:migrate": "dotenv -e apps/notifications/.env -- prisma migrate dev --schema=./apps/notifications/prisma/schema.prisma",
+    "prisma:notifications:push": "dotenv -e apps/notifications/.env -- prisma db push --schema=./apps/notifications/prisma/schema.prisma",
     "start:reviews": "nest start reviews --watch",
     "prisma:reviews:generate": "dotenv -e apps/reviews/.env -- prisma generate --schema=./apps/reviews/prisma/schema.prisma",
     "prisma:reviews:migrate": "dotenv -e apps/reviews/.env -- prisma migrate dev --schema=./apps/reviews/prisma/schema.prisma",
