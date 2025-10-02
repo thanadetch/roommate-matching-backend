@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { RoommateMatchingController } from './roommate-matching.controller';
 import { RoommateMatchingService } from './roommate-matching.service';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [RoommateMatchingController],
-  providers: [RoommateMatchingService],
+  providers: [RoommateMatchingService, PrismaService],
 })
 export class RoommateMatchingModule {}

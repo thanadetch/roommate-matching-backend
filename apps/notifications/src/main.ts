@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { ReviewsModule } from '../../reviews/src/reviews.module';
+import { NotificationsModule } from './notifications.module';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    ReviewsModule,
+    NotificationsModule,
     {
       transport: Transport.RMQ,
       options: {
