@@ -26,7 +26,6 @@ export class NotificationsGatewayController {
 
   @Get()
   findAll() {
-    console.log('asdasd');
     return this.notificationsGatewayService.findAll();
   }
 
