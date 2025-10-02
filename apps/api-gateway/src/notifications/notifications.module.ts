@@ -3,17 +3,25 @@ import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { config } from '../../config/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'NOTIFICATIONS_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: [config.rabbitmqUrl],
-          queue: process.env.NOTIFICATIONS_QUEUE_NAME,
-        },
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.get<string>('RABBITMQ_URL', '')],
+            queue: config.get<string>(
+              'NOTIFICATIONS_QUEUE_NAME',
+              'notifications_queue',
+            ),
+          },
+        }),
       },
     ]),
   ],

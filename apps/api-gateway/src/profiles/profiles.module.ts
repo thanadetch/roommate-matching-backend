@@ -2,18 +2,23 @@ import { Module } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { ProfilesController } from './profiles.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'PROFILES_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'profiles',
-          protoPath: 'libs/photos/src/profiles.proto',
-          url: 'localhost:3001',
-        },
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: 'profiles',
+            protoPath: 'libs/photos/src/profiles.proto',
+            url: `localhost:${config.get<string>('PROFILE_PORT', '3001')}`,
+          },
+        }),
       },
     ]),
   ],
