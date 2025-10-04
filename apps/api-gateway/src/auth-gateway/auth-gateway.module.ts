@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
-import { NotificationsGatewayService } from './notifications-gateway.service';
-import { NotificationsGatewayController } from './notifications-gateway.controller';
+import { AuthGatewayService } from './auth-gateway.service';
+import { AuthGatewayController } from './auth-gateway.controller';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -8,23 +10,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'NOTIFICATIONS_SERVICE',
+        name: 'AUTH_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
             urls: [config.get<string>('RABBITMQ_URL', '')],
-            queue: config.get<string>(
-              'NOTIFICATIONS_QUEUE_NAME',
-              'notifications_queue',
-            ),
+            queue: config.get<string>('AUTH_QUEUE_NAME', 'auth_queue'),
           },
         }),
       },
     ]),
   ],
-  controllers: [NotificationsGatewayController],
-  providers: [NotificationsGatewayService],
+  controllers: [AuthGatewayController],
+  providers: [AuthGatewayService, JwtStrategy, LocalStrategy],
 })
-export class NotificationsGatewayModule {}
+export class AuthGatewayModule {}

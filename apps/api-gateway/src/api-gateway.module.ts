@@ -7,6 +7,10 @@ import { ProfilesGatewayModule } from './profiles-gateway/profiles-gateway.modul
 import { ReviewsGatewayModule } from './reviews-gateway/reviews-gateway.module';
 import { RoommateMatchingGatewayModule } from './roommate-matching-gateway/roommate-matching-gateway.module';
 import { RoomsGatewayModule } from './rooms-gateway/rooms-gateway.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth-gateway/guards/jwt-auth.guard';
+import { AuthGatewayModule } from './auth-gateway/auth-gateway.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -19,8 +23,16 @@ import { RoomsGatewayModule } from './rooms-gateway/rooms-gateway.module';
     ReviewsGatewayModule,
     RoommateMatchingGatewayModule,
     RoomsGatewayModule,
+    AuthGatewayModule,
+    PassportModule,
   ],
   controllers: [ApiGatewayController],
-  providers: [ApiGatewayService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    ApiGatewayService,
+  ],
 })
 export class ApiGatewayModule {}
