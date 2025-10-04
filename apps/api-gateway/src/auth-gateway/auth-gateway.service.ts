@@ -6,10 +6,10 @@ import { ValidatedUser } from '../../../auth/src/dto';
 export class AuthGatewayService {
   constructor(
     @Inject('AUTH_SERVICE')
-    private readonly notificationsClient: ClientProxy,
+    private readonly authClient: ClientProxy,
   ) {}
 
   login(user: ValidatedUser) {
-    return this.notificationsClient.send('auth.login', user);
+    return this.authClient.send('auth.login', user);
   }
 }
