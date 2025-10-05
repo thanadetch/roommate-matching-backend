@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package rooms;
+
+service RoomsService {
+  rpc CreateRoom (CreateRoomRequest) returns (RoomResponse);
+  rpc GetRoomById (GetRoomByIdRequest) returns (RoomResponse);
+  rpc GetRooms (Empty) returns (RoomsListResponse);
+  rpc UpdateRoom (UpdateRoomRequest) returns (RoomResponse);
+  rpc DeleteRoom (DeleteRoomRequest) returns (Empty);
+}
+
+message CreateRoomRequest {
+  string hostId = 1;
+  string title = 2;
+  string description = 3;
+  string location = 4;
+  int32 pricePerMonth = 5;
+  string rules = 6;
+  string availableFrom = 7; // ISO string
+}
+
+message RoomResponse {
+  string id = 1;
+  string hostId = 2;
+  string title = 3;
+  string description = 4;
+  string location = 5;
+  int32 pricePerMonth = 6;
+  string rules = 7;
+  string availableFrom = 8;
+}
+
+message GetRoomByIdRequest {
+  string id = 1;
+}
+
+message UpdateRoomRequest {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string location = 4;
+  int32 pricePerMonth = 5;
+  string rules = 6;
+  string availableFrom = 7;
+}
+
+message DeleteRoomRequest {
+  string id = 1;
+}
+
+message RoomsListResponse {
+  repeated RoomResponse rooms = 1;
+}
+
+message Empty {}
