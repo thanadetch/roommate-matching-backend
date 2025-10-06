@@ -1,8 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import type { ValidatedUser } from './dto';
-import { LoginResponseDto } from './dto';
+import type {
+  RegisterRequestDto,
+  ValidatedUser,
+  ValidateUserRequestDto,
+  LoginResponseDto,
+} from './dto';
+import { Profile } from 'apps/profiles/generated/prisma';
 
 @Controller()
 export class AuthController {
@@ -11,5 +16,17 @@ export class AuthController {
   @MessagePattern('auth.login')
   login(@Payload() user: ValidatedUser): LoginResponseDto {
     return this.authService.login(user);
+  }
+
+  @MessagePattern('auth.validateUser')
+  async validateUser(
+    @Payload() data: ValidateUserRequestDto,
+  ): Promise<ValidatedUser | null> {
+    return this.authService.validateUser(data);
+  }
+
+  @MessagePattern('auth.register')
+  async register(@Payload() data: RegisterRequestDto): Promise<Profile> {
+    return this.authService.register(data);
   }
 }

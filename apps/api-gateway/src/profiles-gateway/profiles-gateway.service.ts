@@ -15,6 +15,6 @@ export class ProfilesGatewayService implements OnModuleInit {
   }
 
   getProfiles(): Promise<{ results: Profile[] }> {
-    return this.profilesService.getProfiles();
+    return this.profilesService.getProfiles({});
   }
 }

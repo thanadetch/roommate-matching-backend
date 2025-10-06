@@ -1,16 +1,107 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginResponseDto } from './dto';
-import type { ValidatedUser } from './dto';
+import type { ClientGrpc } from '@nestjs/microservices';
+import {
+  LoginResponseDto,
+  ValidatedUser,
+  RegisterRequestDto,
+  ValidateUserRequestDto,
+} from './dto';
+import * as bcrypt from 'bcrypt';
+import { ProfilesGrpcService, ProfileEmail } from '@app/common';
+import { firstValueFrom } from 'rxjs';
+import { Prisma, Profile } from 'apps/profiles/generated/prisma';
 
 @Injectable()
-export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+export class AuthService implements OnModuleInit {
+  private profilesService: ProfilesGrpcService;
+
+  constructor(
+    private readonly jwtService: JwtService,
+    @Inject('PROFILES_PACKAGE') private client: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    console.log('Auth service initializing gRPC client...');
+    this.profilesService =
+      this.client.getService<ProfilesGrpcService>('ProfilesService');
+  }
 
   login(user: ValidatedUser): LoginResponseDto {
     const payload = { sub: user.userId, email: user.email };
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async validateUser(
+    validateUserDto: ValidateUserRequestDto,
+  ): Promise<ValidatedUser | null> {
+    try {
+      const profileRequest: ProfileEmail = {
+        email: validateUserDto.email,
+      };
+
+      const profile = await firstValueFrom(
+        this.profilesService.getProfileByEmail(profileRequest),
+      );
+
+      if (!profile) {
+        return null;
+      }
+
+      // Compare the provided password with the stored password hash
+      const isPasswordValid = await bcrypt.compare(
+        validateUserDto.password,
+        profile.password,
+      );
+
+      if (!isPasswordValid) {
+        return null;
+      }
+
+      // Return validated user without password
+      return {
+        userId: profile.id,
+        email: profile.email,
+      };
+    } catch (error) {
+      console.error('Error validating user:', error);
+      return null;
+    }
+  }
+
+  async register(registerDto: RegisterRequestDto): Promise<Profile> {
+    // Check if user already exists
+    const emailRequest: ProfileEmail = {
+      email: registerDto.email,
+    };
+
+    const existingProfile = await firstValueFrom(
+      this.profilesService.getProfileByEmail(emailRequest),
+    ).catch(() => null); // Return null if profile not found
+
+    if (existingProfile) {
+      throw new Error('User already exists');
+    }
+
+    // Hash password and create profile
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+
+    const profileData: Prisma.ProfileCreateInput = {
+      firstName: registerDto.firstName,
+      lastName: registerDto.lastName,
+      email: registerDto.email,
+      password: hashedPassword,
+    };
+
+    const newProfile = await firstValueFrom(
+      this.profilesService.createProfile(profileData),
+    );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    delete newProfile.password;
+
+    return newProfile;
   }
 }

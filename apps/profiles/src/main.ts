@@ -11,7 +11,6 @@ async function bootstrap() {
       options: {
         package: 'profiles',
         protoPath: 'libs/photos/src/profiles.proto',
-        url: `localhost:${process.env.PORT}`,
         onLoadPackageDefinition: (pkg, server) => {
           new ReflectionService(pkg).addToServer(server);
         },

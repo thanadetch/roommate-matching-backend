@@ -5,6 +5,7 @@ package profiles;
 service ProfilesService {
     rpc CreateProfile (Profile) returns (Profile);
     rpc GetProfileById (ProfileId) returns (Profile);
+    rpc GetProfileByEmail (ProfileEmail) returns (Profile);
     rpc UpdateProfile (Profile) returns (Profile);
     rpc DeleteProfile (ProfileId) returns (Profile);
     rpc GetProfiles (Empty) returns (ProfilesList);
@@ -14,6 +15,10 @@ message ProfileId {
     string id = 1;
 }
 
+message ProfileEmail {
+    string email = 1;
+}
+
 message ProfilesList {
     repeated Profile results = 1;
 }
@@ -21,17 +26,22 @@ message ProfilesList {
 message Profile {
     string id = 1;
     string email = 2;
-    string passwordHash = 3;
-    string name = 4;
-    string gender = 5;
-    int32 budgetMin = 6;
-    int32 budgetMax = 7;
-    string preferredArea = 8;
-    string lifestyle = 9;
-    string contactLine = 10;
-    string contactEmail = 11;
-    string createdAt = 12;
-    string updatedAt = 13;
+    string password = 3;
+    string firstName = 4;
+    string lastName = 5;
+    optional string gender = 6;
+    optional int32 budgetMin = 7;
+    optional int32 budgetMax = 8;
+    optional string preferredArea = 9;
+
+    // Lifestyle preferences (individual boolean fields)
+    optional bool smoking = 10;
+    optional bool petOwner = 11;
+    optional bool nightOwl = 12;
+    optional bool quietPerson = 13;
+
+    optional string contactLine = 14;
+    optional string contactEmail = 15;
 }
 
 message Empty {}

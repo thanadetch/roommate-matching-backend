@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -18,6 +19,16 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       inject: [ConfigService], // Inject ConfigService
     }),
+    ClientsModule.register([
+      {
+        name: 'PROFILES_PACKAGE',
+        transport: Transport.GRPC,
+        options: {
+          package: 'profiles',
+          protoPath: 'libs/photos/src/profiles.proto',
+        },
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [AuthService],

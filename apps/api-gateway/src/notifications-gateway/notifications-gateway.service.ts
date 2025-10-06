@@ -4,6 +4,7 @@ import {
   CreateNotificationDto,
   UpdateNotificationDto,
 } from '../../../notifications/src/dto';
+import { Public } from '../auth-gateway/decorators/public.decorator';
 
 @Injectable()
 export class NotificationsGatewayService {

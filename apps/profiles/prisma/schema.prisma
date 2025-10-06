@@ -20,26 +20,29 @@ enum Gender {
 }
 
 model Profile {
-  id           String @id @default(uuid())
+  id       String @id @default(uuid())
   // Account
-  email        String @unique
-  passwordHash String
+  email    String @unique
+  password String
 
   // Business profile
-  name          String
-  gender        Gender? // ใช้ enum จำกัดแค่ male / female
+  firstName     String
+  lastName      String
+  gender        Gender?
   budgetMin     Int?
   budgetMax     Int?
   preferredArea String?
-  lifestyle     Json? // { smoking:false, pet:true, nightOwl:true, quiet:true }
+
+  // Lifestyle preferences
+  smoking     Boolean? @default(false)
+  petOwner    Boolean? @default(false)
+  nightOwl    Boolean? @default(false)
+  quietPerson Boolean? @default(false)
 
   // Contact (เผยเมื่อ match แล้ว)
-  contactLine  String?
-  contactEmail String?
+  contactLine  String? // Line ID
+  contactEmail String? // Contact Email
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([preferredArea])
-  @@index([budgetMin, budgetMax])
 }
