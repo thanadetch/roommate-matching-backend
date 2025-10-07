@@ -3,7 +3,6 @@ import { AuthModule } from './auth.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  console.log('QUEUE_NAME', process.env.QUEUE_NAME);
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AuthModule,
     {

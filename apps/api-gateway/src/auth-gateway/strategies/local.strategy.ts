@@ -2,6 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGatewayService } from '../auth-gateway.service';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -10,12 +11,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
-    const user = await this.authGatewayService.validateUser(email, password).toPromise();
+    const user = await lastValueFrom(
+      this.authGatewayService.validateUser(email, password),
+    );
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    // Remove password from the returned user object for security
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return user;
   }
 }

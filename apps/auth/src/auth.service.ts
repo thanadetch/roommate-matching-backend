@@ -9,7 +9,7 @@ import {
 } from './dto';
 import * as bcrypt from 'bcrypt';
 import { ProfilesGrpcService, ProfileEmail } from '@app/common';
-import { firstValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { Prisma, Profile } from 'apps/profiles/generated/prisma';
 
 @Injectable()
@@ -38,11 +38,9 @@ export class AuthService implements OnModuleInit {
     validateUserDto: ValidateUserRequestDto,
   ): Promise<ValidatedUser | null> {
     try {
-      const profileRequest: ProfileEmail = {
-        email: validateUserDto.email,
-      };
+      const profileRequest: ProfileEmail = { email: validateUserDto.email };
 
-      const profile = await firstValueFrom(
+      const profile = await lastValueFrom(
         this.profilesService.getProfileByEmail(profileRequest),
       );
 
@@ -60,7 +58,6 @@ export class AuthService implements OnModuleInit {
         return null;
       }
 
-      // Return validated user without password
       return {
         userId: profile.id,
         email: profile.email,
@@ -77,9 +74,9 @@ export class AuthService implements OnModuleInit {
       email: registerDto.email,
     };
 
-    const existingProfile = await firstValueFrom(
+    const existingProfile = await lastValueFrom(
       this.profilesService.getProfileByEmail(emailRequest),
-    ).catch(() => null); // Return null if profile not found
+    );
 
     if (existingProfile) {
       throw new Error('User already exists');
@@ -95,7 +92,7 @@ export class AuthService implements OnModuleInit {
       password: hashedPassword,
     };
 
-    const newProfile = await firstValueFrom(
+    const newProfile = await lastValueFrom(
       this.profilesService.createProfile(profileData),
     );
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
