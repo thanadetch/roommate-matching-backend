@@ -6,6 +6,7 @@ import {
   ValidatedUser,
   RegisterRequestDto,
   ValidateUserRequestDto,
+  JwtPayload,
 } from './dto';
 import * as bcrypt from 'bcrypt';
 import { ProfilesGrpcService, ProfileEmail } from '@app/common';
@@ -28,7 +29,7 @@ export class AuthService implements OnModuleInit {
   }
 
   login(user: ValidatedUser): LoginResponseDto {
-    const payload = { sub: user.userId, email: user.email };
+    const payload: JwtPayload = { sub: user.userId, email: user.email };
     return {
       access_token: this.jwtService.sign(payload),
     };

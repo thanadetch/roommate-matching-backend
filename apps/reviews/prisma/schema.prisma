@@ -13,3 +13,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Review {
+  id      String  @id @default(cuid())
+  rating  Int     @db.SmallInt // 1-5 stars
+  comment String? @db.Text // Optional comment
+
+  // User references (just IDs for microservice architecture)
+  reviewerId String // User ID who wrote the review
+  revieweeId String // User ID being reviewed (roommate/person)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ensure one review per reviewer per reviewee (1-to-1 person review)
+  @@unique([reviewerId, revieweeId])
+  @@map("reviews")
+}
