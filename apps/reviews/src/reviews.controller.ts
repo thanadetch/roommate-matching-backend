@@ -1,7 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ReviewsService } from './reviews.service';
-import { CreateReviewDto, UpdateReviewDto, GetReviewsDto } from './dto';
+import {
+  CreateReviewDto,
+  UpdateReviewDto,
+  GetReviewsDto,
+  ReviewsResponse,
+} from './dto';
 import { Review } from '../generated/prisma';
 
 @Controller()
@@ -47,7 +52,7 @@ export class ReviewsController {
   @MessagePattern('reviews.findByUser')
   async getReviewsByUser(
     @Payload() data: { userId: string },
-  ): Promise<{ results: Review[] }> {
+  ): Promise<ReviewsResponse> {
     const results = await this.reviewsService.getReviewsByUser(data.userId);
     return { results };
   }
@@ -55,7 +60,7 @@ export class ReviewsController {
   @MessagePattern('reviews.findForUser')
   async getReviewsForUser(
     @Payload() data: { userId: string },
-  ): Promise<{ results: Review[] }> {
+  ): Promise<ReviewsResponse> {
     const results = await this.reviewsService.getReviewsForUser(data.userId);
     return { results };
   }
