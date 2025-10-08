@@ -11,7 +11,8 @@ import {
 import * as bcrypt from 'bcrypt';
 import { ProfilesGrpcService, ProfileEmail } from '@app/common';
 import { lastValueFrom } from 'rxjs';
-import { Prisma, Profile } from 'apps/profiles/generated/prisma';
+import { Profile } from 'apps/profiles/generated/prisma';
+import { CreateProfileDto } from '../../profiles/src/dto';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -86,7 +87,7 @@ export class AuthService implements OnModuleInit {
     // Hash password and create profile
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    const profileData: Prisma.ProfileCreateInput = {
+    const profileData: CreateProfileDto = {
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
       email: registerDto.email,

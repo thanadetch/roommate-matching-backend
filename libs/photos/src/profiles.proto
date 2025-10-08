@@ -9,10 +9,15 @@ service ProfilesService {
     rpc UpdateProfile (Profile) returns (Profile);
     rpc DeleteProfile (ProfileId) returns (Profile);
     rpc GetProfiles (Empty) returns (ProfilesList);
+    rpc GetProfilesByIds (ProfileIds) returns (ProfilesList);
 }
 
 message ProfileId {
     string id = 1;
+}
+
+message ProfileIds {
+    repeated string ids = 1;
 }
 
 message ProfileEmail {

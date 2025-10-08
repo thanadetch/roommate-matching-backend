@@ -11,6 +11,10 @@ export interface ProfileEmail {
   email: string;
 }
 
+export interface ProfileIds {
+  ids: string[];
+}
+
 export interface ProfilesList {
   results: Profile[];
 }
@@ -24,6 +28,7 @@ export interface ProfilesGrpcService {
   createProfile(profile: CreateProfileDto): Observable<Profile>;
   getProfileById(data: ProfileId): Observable<Profile>;
   getProfileByEmail(data: ProfileEmail): Observable<Profile>;
+  getProfilesByIds(data: ProfileIds): Observable<ProfilesList>;
   updateProfile(profile: UpdateProfileDto): Observable<Profile>;
   deleteProfile(data: ProfileId): Observable<Profile>;
   getProfiles(data: Empty): Observable<ProfilesList>;

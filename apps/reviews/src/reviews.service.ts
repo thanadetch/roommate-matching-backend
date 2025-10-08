@@ -3,15 +3,84 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  Inject,
+  OnModuleInit,
 } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { CreateReviewDto, UpdateReviewDto, GetReviewsDto } from './dto';
+import {
+  CreateReviewDto,
+  UpdateReviewDto,
+  GetReviewsDto,
+  ReviewWithProfile,
+} from './dto';
 import { Prisma, Review } from '../generated/prisma';
+import type { ClientGrpc } from '@nestjs/microservices';
+import { ProfilesGrpcService, ProfileIds } from '@app/common';
+import { lastValueFrom } from 'rxjs';
+import { Profile } from 'apps/profiles/generated/prisma';
 import ReviewWhereInput = Prisma.ReviewWhereInput;
 
 @Injectable()
-export class ReviewsService {
-  constructor(private prisma: PrismaService) {}
+export class ReviewsService implements OnModuleInit {
+  private profilesService: ProfilesGrpcService;
+
+  constructor(
+    private prisma: PrismaService,
+    @Inject('PROFILES_PACKAGE') private client: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    this.profilesService =
+      this.client.getService<ProfilesGrpcService>('ProfilesService');
+  }
+
+  private async enrichReviewsWithProfiles(
+    reviews: Review[],
+  ): Promise<ReviewWithProfile[]> {
+    if (reviews.length === 0) {
+      return [];
+    }
+
+    // Get unique reviewee IDs
+    const uniqueRevieweeIds = [
+      ...new Set(reviews.map((review) => review.revieweeId)),
+    ];
+
+    try {
+      // Fetch all profiles in a single batch call
+      const profilesRequest: ProfileIds = { ids: uniqueRevieweeIds };
+      const profilesBatch = await lastValueFrom(
+        this.profilesService.getProfilesByIds(profilesRequest),
+      );
+
+      // Create a map for quick profile lookup
+      const profilesMap = new Map<string, Profile>();
+      profilesBatch.results.forEach((profile) => {
+        profilesMap.set(profile.id, profile);
+      });
+
+      // Enrich reviews with profiles
+      return reviews.map((review) => ({
+        ...review,
+        revieweeProfile: profilesMap.get(review.revieweeId) || undefined,
+      }));
+    } catch (error) {
+      // If batch fetch fails, return reviews without profiles
+      console.error('Failed to fetch profiles batch:', error);
+      return reviews.map((review) => ({
+        ...review,
+        revieweeProfile: undefined,
+      }));
+    }
+  }
+
+  private async enrichReviewWithProfile(
+    review: Review,
+  ): Promise<ReviewWithProfile> {
+    // For single review, use the batch method with one ID for consistency
+    const enrichedReviews = await this.enrichReviewsWithProfiles([review]);
+    return enrichedReviews[0];
+  }
 
   async createReview(
     reviewerId: string,
@@ -51,7 +120,7 @@ export class ReviewsService {
     });
   }
 
-  async getReviews(filters: GetReviewsDto = {}): Promise<Review[]> {
+  async getReviews(filters: GetReviewsDto = {}): Promise<ReviewWithProfile[]> {
     const where: ReviewWhereInput = {};
 
     if (filters.reviewerId) {
@@ -62,15 +131,17 @@ export class ReviewsService {
       where.revieweeId = filters.revieweeId;
     }
 
-    return this.prisma.review.findMany({
+    const reviews = await this.prisma.review.findMany({
       where,
       orderBy: {
         createdAt: 'desc',
       },
     });
+
+    return this.enrichReviewsWithProfiles(reviews);
   }
 
-  async getReviewById(id: string): Promise<Review> {
+  async getReviewById(id: string): Promise<ReviewWithProfile> {
     const review = await this.prisma.review.findUnique({
       where: { id },
     });
@@ -79,7 +150,7 @@ export class ReviewsService {
       throw new NotFoundException('Review not found');
     }
 
-    return review;
+    return this.enrichReviewWithProfile(review);
   }
 
   async updateReview(
@@ -131,8 +202,8 @@ export class ReviewsService {
     });
   }
 
-  async getReviewsByUser(userId: string): Promise<Review[]> {
-    return this.prisma.review.findMany({
+  async getReviewsByUser(userId: string): Promise<ReviewWithProfile[]> {
+    const reviews = await this.prisma.review.findMany({
       where: {
         reviewerId: userId,
       },
@@ -140,10 +211,12 @@ export class ReviewsService {
         createdAt: 'desc',
       },
     });
+
+    return this.enrichReviewsWithProfiles(reviews);
   }
 
-  async getReviewsForUser(userId: string): Promise<Review[]> {
-    return this.prisma.review.findMany({
+  async getReviewsForUser(userId: string): Promise<ReviewWithProfile[]> {
+    const reviews = await this.prisma.review.findMany({
       where: {
         revieweeId: userId,
       },
@@ -151,5 +224,7 @@ export class ReviewsService {
         createdAt: 'desc',
       },
     });
+
+    return this.enrichReviewsWithProfiles(reviews);
   }
 }

@@ -1,12 +1,14 @@
 import { Controller } from '@nestjs/common';
-import { ProfilesService } from './profiles.service';
-import { Profile } from '../generated/prisma';
 import { GrpcMethod } from '@nestjs/microservices';
+import { ProfilesService } from './profiles.service';
 import {
   CreateProfileDto,
   UpdateProfileDto,
+  GetProfileDto,
   GetProfileByEmailDto,
-  GetProfileByIdDto,
+  GetProfilesBatchDto,
+  ProfileResponseDto,
+  ProfilesListResponse,
 } from './dto';
 
 @Controller()
@@ -14,27 +16,39 @@ export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
   @GrpcMethod('ProfilesService', 'GetProfiles')
-  getProfiles(_: object): Promise<{ results: Profile[] }> {
-    return this.profilesService.getProfiles(_);
+  async getProfiles(): Promise<ProfilesListResponse> {
+    return this.profilesService.getProfiles();
   }
 
   @GrpcMethod('ProfilesService', 'CreateProfile')
-  createProfile(data: CreateProfileDto): Promise<Profile> {
+  async createProfile(data: CreateProfileDto): Promise<ProfileResponseDto> {
     return this.profilesService.createProfile(data);
   }
 
   @GrpcMethod('ProfilesService', 'UpdateProfile')
-  updateProfile(data: UpdateProfileDto & { id: string }): Promise<Profile> {
-    return this.profilesService.updateProfile(data.id, data);
+  async updateProfile(data: UpdateProfileDto): Promise<ProfileResponseDto> {
+    const { id, ...updateData } = data;
+    return this.profilesService.updateProfile(id!, updateData);
   }
 
   @GrpcMethod('ProfilesService', 'GetProfileById')
-  getProfile(data: GetProfileByIdDto): Promise<Profile | null> {
+  async getProfileById(
+    data: GetProfileDto,
+  ): Promise<ProfileResponseDto | null> {
     return this.profilesService.getProfile(data.id);
   }
 
   @GrpcMethod('ProfilesService', 'GetProfileByEmail')
-  getProfileByEmail(data: GetProfileByEmailDto): Promise<Profile | null> {
+  async getProfileByEmail(
+    data: GetProfileByEmailDto,
+  ): Promise<ProfileResponseDto | null> {
     return this.profilesService.getProfileByEmail(data);
+  }
+
+  @GrpcMethod('ProfilesService', 'GetProfilesByIds')
+  async getProfilesByIds(
+    data: GetProfilesBatchDto,
+  ): Promise<ProfilesListResponse> {
+    return this.profilesService.getProfilesByIds(data);
   }
 }

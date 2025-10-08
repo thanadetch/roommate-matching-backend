@@ -1,41 +1,84 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { Profile, Prisma } from '../generated/prisma';
+import { Profile } from '../generated/prisma';
+import {
+  CreateProfileDto,
+  UpdateProfileDto,
+  GetProfileByEmailDto,
+  GetProfilesBatchDto,
+  ProfilesListResponse,
+  ProfileResponseDto,
+} from './dto';
 
 @Injectable()
 export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
-  async getProfiles(_: object): Promise<{ results: Profile[] }> {
-    const results = await this.prisma.profile.findMany();
+  async getProfiles(): Promise<ProfilesListResponse> {
+    const results = await this.prisma.profile.findMany({
+      omit: {
+        password: true,
+      },
+    });
     return { results };
   }
 
   async updateProfile(
     id: string,
-    data: Prisma.ProfileUpdateInput,
-  ): Promise<Profile> {
+    data: Omit<UpdateProfileDto, 'id'>,
+  ): Promise<ProfileResponseDto> {
     return this.prisma.profile.update({
       where: { id },
       data,
+      omit: {
+        password: true,
+      },
     });
   }
 
-  async createProfile(data: Prisma.ProfileCreateInput): Promise<Profile> {
+  async createProfile(data: CreateProfileDto): Promise<ProfileResponseDto> {
     return this.prisma.profile.create({
       data,
+      omit: {
+        password: true,
+      },
     });
   }
 
-  async getProfile(userId: string): Promise<Profile | null> {
+  async getProfile(userId: string): Promise<ProfileResponseDto | null> {
     return this.prisma.profile.findUnique({
       where: { id: userId },
+      omit: {
+        password: true,
+      },
     });
   }
 
-  async getProfileByEmail(data: { email: string }) {
+  async getProfileByEmail(
+    data: GetProfileByEmailDto,
+  ): Promise<ProfileResponseDto | null> {
     return this.prisma.profile.findUnique({
       where: { email: data.email },
+      omit: {
+        password: true,
+      },
     });
+  }
+
+  async getProfilesByIds(
+    data: GetProfilesBatchDto,
+  ): Promise<ProfilesListResponse> {
+    const profiles = await this.prisma.profile.findMany({
+      where: {
+        id: {
+          in: data.ids,
+        },
+      },
+      omit: {
+        password: true,
+      },
+    });
+
+    return { results: profiles };
   }
 }
