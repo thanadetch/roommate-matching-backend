@@ -24,7 +24,7 @@ export class ProfilesService {
 
   async updateProfile(
     id: string,
-    data: Omit<UpdateProfileDto, 'id'>,
+    data: UpdateProfileDto,
   ): Promise<ProfileResponseDto> {
     return this.prisma.profile.update({
       where: { id },

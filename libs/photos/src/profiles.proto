@@ -47,6 +47,10 @@ message Profile {
 
     optional string contactLine = 14;
     optional string contactEmail = 15;
+
+    // Timestamp fields - changed to proper Timestamp type
+    string createdAt = 16;
+    string updatedAt = 17;
 }
 
 message Empty {}

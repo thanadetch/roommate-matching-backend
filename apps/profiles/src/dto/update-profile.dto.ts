@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsNumber,
   IsEnum,
+  IsBoolean,
 } from 'class-validator';
 import { Gender } from '../../generated/prisma';
 
@@ -44,23 +45,38 @@ export class UpdateProfileDto {
   @IsString()
   preferredArea?: string;
 
+  // Lifestyle preferences (individual boolean fields)
+  @IsOptional()
+  @IsBoolean()
+  smoking?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  petOwner?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  nightOwl?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  quietPerson?: boolean;
+
+  // Contact information
   @IsOptional()
   @IsString()
-  bio?: string;
+  contactLine?: string;
 
   @IsOptional()
   @IsString()
-  occupation?: string;
+  contactEmail?: string;
+
+  // Timestamp fields (for responses)
+  @IsOptional()
+  @IsString()
+  createdAt?: string;
 
   @IsOptional()
   @IsString()
-  lifestyle?: string;
-
-  @IsOptional()
-  @IsString()
-  interests?: string;
-
-  @IsOptional()
-  @IsString()
-  contactInfo?: string;
+  updatedAt?: string;
 }
