@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { Prisma, RoomListing } from '../generated/prisma';
-
+import { PrismaService } from '../src/prisma.service';
+import { Prisma, RoomListing } from '../generated/prisma';  
 
 @Injectable()
 export class RoomsService {
@@ -33,13 +32,12 @@ export class RoomsService {
   }
 
   // UPDATE
-async updateRoom(id: string, data: Prisma.RoomListingUpdateInput): Promise<RoomListing> {
-  return this.prisma.roomListing.update({
-    where: { id },
-    data,
-  });
-}
-
+  async updateRoom(id: string, data: Prisma.RoomListingUpdateInput): Promise<RoomListing> {
+    return this.prisma.roomListing.update({
+      where: { id },
+      data,
+    });
+  }
 
   // DELETE
   async deleteRoom(id: string): Promise<RoomListing> {

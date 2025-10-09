@@ -13,3 +13,41 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum InterestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum MatchStatus {
+  MATCHED
+  ENDED
+}
+
+model Interest {
+  id              String         @id @default(uuid())
+  roomListingId   String          // refer from rooms service
+  seekerId        String          // user id of seeker
+  message         String?
+  lifestyle       Json?           // {noSmoking:true, quiet:true}
+  status          InterestStatus  @default(PENDING)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model RoommateMatch {
+  id              String        @id @default(uuid())
+  roomListingId   String        // room matched already
+  hostId          String        // host
+  seekerId        String        // seeker
+  matchedAt       DateTime      @default(now())
+  status          MatchStatus   @default(MATCHED)
+
+  // Optional review
+  review          String?
+  rating          Int?          // 1–5 stars
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}

@@ -8,7 +8,7 @@ import { PrismaService } from './prisma.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: './apps/rooms/.env.dev',
+      envFilePath: './apps/rooms/.env',
     }),
   ],
   controllers: [RoomsController],

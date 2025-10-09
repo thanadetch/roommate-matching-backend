@@ -5,33 +5,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
-  
-  // REST API
-  @Post()
-  async create(@Body() data: any) {
-    return this.roomsService.createRoom(data);
-  }
-
-  @Get()
-  async findAll() {
-    return this.roomsService.getRooms();
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.roomsService.getRoomById(id);
-  }
-
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() data: any) {
-    return this.roomsService.updateRoom(id, data);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.roomsService.deleteRoom(id);
-  }
-
+ 
 // RabbitMQ
 @MessagePattern({ cmd: 'create_room' })
   async handleCreateRoom(@Payload() data: any) {
