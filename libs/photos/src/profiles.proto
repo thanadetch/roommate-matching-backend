@@ -6,6 +6,7 @@ service ProfilesService {
     rpc CreateProfile (Profile) returns (Profile);
     rpc GetProfileById (ProfileId) returns (Profile);
     rpc GetProfileByEmail (ProfileEmail) returns (Profile);
+    rpc GetProfileByEmailWithPassword (ProfileEmail) returns (Profile);
     rpc UpdateProfile (Profile) returns (Profile);
     rpc DeleteProfile (ProfileId) returns (Profile);
     rpc GetProfiles (Empty) returns (ProfilesList);

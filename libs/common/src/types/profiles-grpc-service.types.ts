@@ -28,6 +28,7 @@ export interface ProfilesGrpcService {
   createProfile(profile: CreateProfileDto): Observable<Profile>;
   getProfileById(data: ProfileId): Observable<Profile>;
   getProfileByEmail(data: ProfileEmail): Observable<Profile>;
+  getProfileByEmailWithPassword(data: ProfileEmail): Observable<Profile>;
   getProfilesByIds(data: ProfileIds): Observable<ProfilesList>;
   updateProfile(profile: UpdateProfileDto): Observable<Profile>;
   deleteProfile(data: ProfileId): Observable<Profile>;

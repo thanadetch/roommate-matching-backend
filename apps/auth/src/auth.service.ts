@@ -43,7 +43,7 @@ export class AuthService implements OnModuleInit {
       const profileRequest: ProfileEmail = { email: validateUserDto.email };
 
       const profile = await lastValueFrom(
-        this.profilesService.getProfileByEmail(profileRequest),
+        this.profilesService.getProfileByEmailWithPassword(profileRequest),
       );
 
       if (!profile) {

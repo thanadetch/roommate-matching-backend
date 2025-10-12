@@ -10,6 +10,7 @@ import {
   ProfileResponseDto,
   ProfilesListResponse,
 } from './dto';
+import { Profile } from '../generated/prisma';
 
 @Controller()
 export class ProfilesController {
@@ -43,6 +44,13 @@ export class ProfilesController {
     data: GetProfileByEmailDto,
   ): Promise<ProfileResponseDto | null> {
     return this.profilesService.getProfileByEmail(data);
+  }
+
+  @GrpcMethod('ProfilesService', 'GetProfileByEmailWithPassword')
+  async getProfileByEmailWithPassword(
+    data: GetProfileByEmailDto,
+  ): Promise<Profile | null> {
+    return this.profilesService.getProfileByEmail(data, false);
   }
 
   @GrpcMethod('ProfilesService', 'GetProfilesByIds')

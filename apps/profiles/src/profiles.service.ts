@@ -8,6 +8,7 @@ import {
   ProfilesListResponse,
   ProfileResponseDto,
 } from './dto';
+import { Profile } from '../generated/prisma';
 
 @Injectable()
 export class ProfilesService {
@@ -55,11 +56,12 @@ export class ProfilesService {
 
   async getProfileByEmail(
     data: GetProfileByEmailDto,
-  ): Promise<ProfileResponseDto | null> {
+    omitPassword = true,
+  ): Promise<Profile | null> {
     return this.prisma.profile.findUnique({
       where: { email: data.email },
       omit: {
-        password: true,
+        password: omitPassword,
       },
     });
   }
