@@ -1,7 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
-import { ProfilesGrpcService, ProfilesList } from '@app/common';
+import {
+  ProfileResponse,
+  ProfilesGrpcService,
+  ProfilesList,
+} from '@app/common';
 import { Profile } from 'apps/profiles/generated/prisma';
 import { CreateProfileDto, UpdateProfileDto } from 'apps/profiles/src/dto';
 
@@ -28,11 +32,11 @@ export class ProfilesGatewayService implements OnModuleInit {
     return this.profilesService.updateProfile(data);
   }
 
-  getProfileById(id: string): Observable<Profile> {
+  getProfileById(id: string): Observable<ProfileResponse> {
     return this.profilesService.getProfileById({ id });
   }
 
-  getProfileByEmail(email: string): Observable<Profile> {
+  getProfileByEmail(email: string): Observable<ProfileResponse> {
     return this.profilesService.getProfileByEmail({ email });
   }
 

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ProfilesGatewayService } from './profiles-gateway.service';
 import { Observable } from 'rxjs';
-import { ProfilesList } from '@app/common';
+import { ProfileResponse, ProfilesList } from '@app/common';
 import { Profile } from 'apps/profiles/generated/prisma';
 import { CreateProfileDto, UpdateProfileDto } from 'apps/profiles/src/dto';
 
@@ -43,12 +43,14 @@ export class ProfilesGatewayController {
   }
 
   @Get(':id')
-  getProfileById(@Param('id') id: string): Observable<Profile> {
+  getProfileById(@Param('id') id: string): Observable<ProfileResponse> {
     return this.profilesGatewayService.getProfileById(id);
   }
 
   @Get('email/:email')
-  getProfileByEmail(@Param('email') email: string): Observable<Profile> {
+  getProfileByEmail(
+    @Param('email') email: string,
+  ): Observable<ProfileResponse> {
     return this.profilesGatewayService.getProfileByEmail(email);
   }
 
