@@ -8,11 +8,16 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: [process.env.RABBITMQ_URL || ''],
-        queue: process.env.QUEUE_NAME,
+        urls: [process.env.RABBITMQ_URL || 'amqp://localhost:5672'],
+        queue:
+          process.env.ROOMMATE_MATCHING_QUEUE_NAME ||
+          'roommate_matching_queue',
       },
     },
   );
+
   await app.listen();
+  console.log('Roommate Matching app is running...');
 }
+
 bootstrap();

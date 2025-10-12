@@ -7,7 +7,7 @@ async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(RoomsModule);
   const configService = appContext.get(ConfigService);
 
-  // env.dev
+  // env.
   const rabbitmqUrl = configService.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672';
   const queueName = configService.get<string>('QUEUE_NAME') || 'rooms_queue';
   
