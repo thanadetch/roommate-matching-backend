@@ -4,9 +4,9 @@ package profiles;
 
 service ProfilesService {
     rpc CreateProfile (Profile) returns (Profile);
-    rpc GetProfileById (ProfileId) returns (Profile);
-    rpc GetProfileByEmail (ProfileEmail) returns (Profile);
-    rpc GetProfileByEmailWithPassword (ProfileEmail) returns (Profile);
+    rpc GetProfileById (ProfileId) returns (ProfileResponse);
+    rpc GetProfileByEmail (ProfileEmail) returns (ProfileResponse);
+    rpc GetProfileByEmailWithPassword (ProfileEmail) returns (ProfileResponse);
     rpc UpdateProfile (Profile) returns (Profile);
     rpc DeleteProfile (ProfileId) returns (Profile);
     rpc GetProfiles (Empty) returns (ProfilesList);
@@ -23,6 +23,10 @@ message ProfileIds {
 
 message ProfileEmail {
     string email = 1;
+}
+
+message ProfileResponse {
+    optional Profile result = 1;
 }
 
 message ProfilesList {

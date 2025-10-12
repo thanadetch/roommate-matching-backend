@@ -24,11 +24,17 @@ export interface Empty {
   [key: string]: never;
 }
 
+export interface ProfileResponse {
+  result?: Profile;
+}
+
 export interface ProfilesGrpcService {
   createProfile(profile: CreateProfileDto): Observable<Profile>;
-  getProfileById(data: ProfileId): Observable<Profile>;
-  getProfileByEmail(data: ProfileEmail): Observable<Profile>;
-  getProfileByEmailWithPassword(data: ProfileEmail): Observable<Profile>;
+  getProfileById(data: ProfileId): Observable<ProfileResponse>;
+  getProfileByEmail(data: ProfileEmail): Observable<ProfileResponse>;
+  getProfileByEmailWithPassword(
+    data: ProfileEmail,
+  ): Observable<ProfileResponse>;
   getProfilesByIds(data: ProfileIds): Observable<ProfilesList>;
   updateProfile(profile: UpdateProfileDto): Observable<Profile>;
   deleteProfile(data: ProfileId): Observable<Profile>;

@@ -42,13 +42,15 @@ export class AuthService implements OnModuleInit {
     try {
       const profileRequest: ProfileEmail = { email: validateUserDto.email };
 
-      const profile = await lastValueFrom(
+      const response = await lastValueFrom(
         this.profilesService.getProfileByEmailWithPassword(profileRequest),
       );
 
-      if (!profile) {
+      if (!response.result) {
         return null;
       }
+
+      const profile = response.result;
 
       // Compare the provided password with the stored password hash
       const isPasswordValid = await bcrypt.compare(
@@ -71,36 +73,41 @@ export class AuthService implements OnModuleInit {
   }
 
   async register(registerDto: RegisterRequestDto): Promise<Profile> {
-    // Check if user already exists
-    const emailRequest: ProfileEmail = {
-      email: registerDto.email,
-    };
+    try {
+      // Check if user already exists
+      const emailRequest: ProfileEmail = {
+        email: registerDto.email,
+      };
 
-    const existingProfile = await lastValueFrom(
-      this.profilesService.getProfileByEmail(emailRequest),
-    );
+      const response = await lastValueFrom(
+        this.profilesService.getProfileByEmail(emailRequest),
+      );
 
-    if (existingProfile) {
-      throw new Error('User already exists');
+      if (response.result) {
+        throw new Error('User already exists');
+      }
+
+      // Hash password and create profile
+      const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+
+      const profileData: CreateProfileDto = {
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+        email: registerDto.email,
+        password: hashedPassword,
+      };
+
+      const newProfile = await lastValueFrom(
+        this.profilesService.createProfile(profileData),
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      delete newProfile.password;
+
+      return newProfile;
+    } catch (error) {
+      console.error('Error in register:', error);
+      throw error;
     }
-
-    // Hash password and create profile
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-
-    const profileData: CreateProfileDto = {
-      firstName: registerDto.firstName,
-      lastName: registerDto.lastName,
-      email: registerDto.email,
-      password: hashedPassword,
-    };
-
-    const newProfile = await lastValueFrom(
-      this.profilesService.createProfile(profileData),
-    );
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    delete newProfile.password;
-
-    return newProfile;
   }
 }

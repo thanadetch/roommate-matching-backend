@@ -9,8 +9,8 @@ import {
   GetProfilesBatchDto,
   ProfileResponseDto,
   ProfilesListResponse,
+  ProfilesResponse,
 } from './dto';
-import { Profile } from '../generated/prisma';
 
 @Controller()
 export class ProfilesController {
@@ -33,24 +33,25 @@ export class ProfilesController {
   }
 
   @GrpcMethod('ProfilesService', 'GetProfileById')
-  async getProfileById(
-    data: GetProfileDto,
-  ): Promise<ProfileResponseDto | null> {
-    return this.profilesService.getProfile(data.id);
+  async getProfileById(data: GetProfileDto): Promise<ProfilesResponse> {
+    const profile = await this.profilesService.getProfile(data.id);
+    return { result: profile };
   }
 
   @GrpcMethod('ProfilesService', 'GetProfileByEmail')
   async getProfileByEmail(
     data: GetProfileByEmailDto,
-  ): Promise<ProfileResponseDto | null> {
-    return this.profilesService.getProfileByEmail(data);
+  ): Promise<ProfilesResponse> {
+    const profile = await this.profilesService.getProfileByEmail(data);
+    return { result: profile };
   }
 
   @GrpcMethod('ProfilesService', 'GetProfileByEmailWithPassword')
   async getProfileByEmailWithPassword(
     data: GetProfileByEmailDto,
-  ): Promise<Profile | null> {
-    return this.profilesService.getProfileByEmail(data, false);
+  ): Promise<ProfilesResponse> {
+    const profile = await this.profilesService.getProfileByEmail(data, false);
+    return { result: profile };
   }
 
   @GrpcMethod('ProfilesService', 'GetProfilesByIds')
