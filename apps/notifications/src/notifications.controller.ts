@@ -16,7 +16,6 @@ export class NotificationsController {
   // Get all notifications
   @MessagePattern('notifications.findAll')
   async findAll() {
-    console.log('Finding all notifications');
     return this.notificationsService.findAll();
   }
 
