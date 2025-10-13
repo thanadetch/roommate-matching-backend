@@ -8,6 +8,7 @@ service RoomsService {
   rpc GetRooms (Empty) returns (RoomsListResponse);
   rpc UpdateRoom (UpdateRoomRequest) returns (RoomResponse);
   rpc DeleteRoom (DeleteRoomRequest) returns (Empty);
+  rpc BrowseRooms (BrowseRoomsRequest) returns (RoomsListResponse);
 }
 
 message CreateRoomRequest {
@@ -18,6 +19,7 @@ message CreateRoomRequest {
   int32 pricePerMonth = 5;
   string rules = 6;
   string availableFrom = 7; // ISO string
+  repeated string lifestyle = 8; 
 }
 
 message RoomResponse {
@@ -29,6 +31,16 @@ message RoomResponse {
   int32 pricePerMonth = 6;
   string rules = 7;
   string availableFrom = 8;
+  repeated string lifestyle = 9;
+}
+
+message BrowseRoomsRequest {
+  string location = 1;    
+  int32 minPrice = 2;   
+  int32 maxPrice = 3;
+  repeated string lifestyle = 4; 
+  int32 limit = 5;      
+  int32 offset = 6;
 }
 
 message GetRoomByIdRequest {
@@ -43,6 +55,7 @@ message UpdateRoomRequest {
   int32 pricePerMonth = 5;
   string rules = 6;
   string availableFrom = 7;
+  repeated string lifestyle = 8;
 }
 
 message DeleteRoomRequest {

@@ -15,6 +15,7 @@ export class RoomsService {
     pricePerMonth: number;
     rules?: any;
     availableFrom?: Date;
+    lifestyle?: string[]; // field lifestyle
   }): Promise<RoomListing> {
     return this.prisma.roomListing.create({ data });
   }
@@ -22,6 +23,26 @@ export class RoomsService {
   // READ ALL
   async getRooms(): Promise<RoomListing[]> {
     return this.prisma.roomListing.findMany();
+  }
+
+  // BROWSE / FILTER ROOMS
+  async browseRooms(filters: {
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    lifestyle?: string[];
+  }): Promise<RoomListing[]> {
+    const { location, minPrice, maxPrice, lifestyle } = filters;
+
+    return this.prisma.roomListing.findMany({
+      where: {
+        ...(location && { location: { contains: location, mode: 'insensitive' } }),
+        ...(minPrice && { pricePerMonth: { gte: Number(minPrice) } }),
+        ...(maxPrice && { pricePerMonth: { lte: Number(maxPrice) } }),
+        ...(lifestyle && lifestyle.length > 0 && { lifestyle: { hasSome: lifestyle } }),
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   // READ ONE

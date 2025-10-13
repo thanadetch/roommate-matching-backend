@@ -22,12 +22,13 @@ enum ListingStatus {
 
 model RoomListing {
   id            String        @id @default(uuid())
-  hostId        String // อ้างอิง Profile.id (ต่าง DB)
+  hostId        String       // Refer Profile.id (Diff DB)
   title         String
   description   String?
   location      String
   pricePerMonth Int
-  rules         Json? // { noSmoking:true, noPet:false }
+  rules         Json?         // { noSmoking:true, petFriendly:false, quiet:true, nightOwl:false }
+  lifestyle     String[]      // to filter such as ["Quiet", "Pet Friendly"]
   availableFrom DateTime?
   status        ListingStatus @default(OPEN)
 
