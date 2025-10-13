@@ -42,6 +42,7 @@ export class ReviewsGatewayController {
     return this.reviewsGatewayService.getReviews(filters);
   }
 
+  // get reviews written by a reviewer
   @Get('by-user/:userId')
   getReviewsByUser(
     @Param('userId') userId: string,
@@ -49,6 +50,7 @@ export class ReviewsGatewayController {
     return this.reviewsGatewayService.getReviewsByUser(userId);
   }
 
+  // get reviews for reviewee
   @Get('for-user/:userId')
   getReviewsForUser(
     @Param('userId') userId: string,

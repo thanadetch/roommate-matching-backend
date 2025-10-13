@@ -19,11 +19,13 @@ export class ProfilesGatewayController {
     private readonly profilesGatewayService: ProfilesGatewayService,
   ) {}
 
+  // TODO: not used
   @Get()
   getProfiles(): Observable<ProfilesList> {
     return this.profilesGatewayService.getProfiles();
   }
 
+  // TODO: not used
   @Post()
   createProfile(
     @Body() createProfileData: CreateProfileDto,
@@ -54,6 +56,7 @@ export class ProfilesGatewayController {
     return this.profilesGatewayService.getProfileByEmail(email);
   }
 
+  // TODO: not used
   @Delete(':id')
   deleteProfile(@Param('id') id: string): Observable<Profile> {
     return this.profilesGatewayService.deleteProfile(id);
