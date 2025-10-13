@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { RoomsGatewayService } from './rooms-gateway.service';
 
-@Controller('rooms-gateway')
+@Controller('rooms')
 export class RoomsGatewayController {
   constructor(private readonly roomsService: RoomsGatewayService) {}
 
@@ -15,6 +15,11 @@ export class RoomsGatewayController {
     return this.roomsService.getAllRooms();
   }
 
+  @Get('browse')
+  async browse(@Query() query: any) {
+    return this.roomsService.browseRooms(query);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.roomsService.getRoomById(id);
@@ -22,7 +27,7 @@ export class RoomsGatewayController {
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: any) {
-    return this.roomsService.updateRoom({ id, ...dto });
+    return this.roomsService.updateRoom(id, dto);
   }
 
   @Delete(':id')

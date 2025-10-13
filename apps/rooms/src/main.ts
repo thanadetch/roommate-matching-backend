@@ -9,7 +9,8 @@ async function bootstrap() {
 
   // env.
   const rabbitmqUrl = configService.get<string>('RABBITMQ_URL') || 'amqp://localhost:5672';
-  const queueName = configService.get<string>('QUEUE_NAME') || 'rooms_queue';
+  const queueName = configService.get<string>('ROOM_QUEUE_NAME') || 'rooms_queue';
+
   
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(RoomsModule, {
     transport: Transport.RMQ,
@@ -17,7 +18,8 @@ async function bootstrap() {
       urls: [rabbitmqUrl],
       queue: queueName,
       queueOptions: {
-        durable: false,
+        durable: true,
+        arguments: { 'x-queue-type': 'classic' },
       },
     },
   });

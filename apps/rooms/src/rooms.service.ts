@@ -61,9 +61,11 @@ export class RoomsService {
   }
 
   // DELETE
-  async deleteRoom(id: string): Promise<RoomListing> {
-    return this.prisma.roomListing.delete({
-      where: { id },
-    });
-  }
+  async deleteRoom(id: string): Promise<{ message: string }> {
+  await this.prisma.roomListing.delete({
+    where: { id },
+  });
+  return { message: 'Room deleted successfully' };
+}
+
 }
