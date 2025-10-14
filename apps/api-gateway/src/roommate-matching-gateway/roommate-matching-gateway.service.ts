@@ -1,6 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import {
+  InterestResponseDto,
+  InterestCountsResponseDto,
+  MatchesResponseDto,
+} from '@app/common';
+import { CreateInterestDto } from '../../../roommate-matching/src/dto/create-interest.dto';
+import { UpdateInterestStatusDto } from '../../../roommate-matching/src/dto/update-interest-status.dto';
+import { GetInterestsDto } from '../../../roommate-matching/src/dto/get-interests.dto';
 
 @Injectable()
 export class RoommateMatchingGatewayService {
@@ -9,32 +17,82 @@ export class RoommateMatchingGatewayService {
     private readonly matchingClient: ClientProxy,
   ) {}
 
-  // (pending, accepted, rejected)
-  async getInterests() {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'get_interests' }, {}));
+  async createInterest(
+    createInterestDto: CreateInterestDto,
+  ): Promise<InterestResponseDto> {
+    return firstValueFrom(
+      this.matchingClient.send('interest.create', createInterestDto),
+    );
   }
 
-  async acceptInterest(id: string) {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'accept_interest' }, { id }));
+  async getInterestById(id: string): Promise<InterestResponseDto> {
+    return firstValueFrom(
+      this.matchingClient.send('interest.findById', { id }),
+    );
   }
 
-  async rejectInterest(id: string) {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'reject_interest' }, { id }));
+  async updateInterestStatus(
+    id: string,
+    updateDto: UpdateInterestStatusDto,
+  ): Promise<InterestResponseDto> {
+    return firstValueFrom(
+      this.matchingClient.send('interest.updateStatus', { id, updateDto }),
+    );
   }
 
-  async getAllMatches() {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'get_all_matches' }, {}));
+  async acceptInterest(id: string): Promise<InterestResponseDto> {
+    return firstValueFrom(this.matchingClient.send('interest.accept', { id }));
   }
 
-  async getMatchesByUser(userId: string) {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'get_matches_by_user' }, { userId }));
+  async rejectInterest(id: string): Promise<InterestResponseDto> {
+    return firstValueFrom(this.matchingClient.send('interest.reject', { id }));
   }
 
-  async deleteMatch(id: string) {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'delete_match' }, { id }));
+  async getInterestsForHost(
+    hostId: string,
+    query: GetInterestsDto,
+  ): Promise<InterestResponseDto[]> {
+    return firstValueFrom(
+      this.matchingClient.send('interest.findByHost', {
+        hostId,
+        status: query.status,
+      }),
+    );
   }
 
-  async matchRoommates(dto: any) {
-    return firstValueFrom(this.matchingClient.send({ cmd: 'match_roommates' }, dto));
+  async getInterestsForSeeker(
+    seekerId: string,
+    query: GetInterestsDto,
+  ): Promise<InterestResponseDto[]> {
+    return firstValueFrom(
+      this.matchingClient.send('interest.findBySeeker', {
+        seekerId,
+        status: query.status,
+      }),
+    );
+  }
+
+  async getInterestCounts(hostId: string): Promise<InterestCountsResponseDto> {
+    return firstValueFrom(
+      this.matchingClient.send('interest.getHostCounts', { hostId }),
+    );
+  }
+
+  async getMatchesAsHost(hostId: string): Promise<InterestResponseDto[]> {
+    return firstValueFrom(
+      this.matchingClient.send('match.findAsHost', { hostId }),
+    );
+  }
+
+  async getMatchesAsSeeker(seekerId: string): Promise<InterestResponseDto[]> {
+    return firstValueFrom(
+      this.matchingClient.send('match.findAsSeeker', { seekerId }),
+    );
+  }
+
+  async getAllMatches(userId: string): Promise<MatchesResponseDto> {
+    return firstValueFrom(
+      this.matchingClient.send('match.findByUser', { userId }),
+    );
   }
 }

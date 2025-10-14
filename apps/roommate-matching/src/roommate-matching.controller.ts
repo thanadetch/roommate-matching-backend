@@ -1,6 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RoommateMatchingService } from './roommate-matching.service';
+import { CreateInterestDto } from './dto/create-interest.dto';
+import { UpdateInterestStatusDto } from './dto/update-interest-status.dto';
+import { InterestStatus } from '@app/common';
 
 @Controller()
 export class RoommateMatchingController {
@@ -8,39 +11,84 @@ export class RoommateMatchingController {
     private readonly roommateMatchingService: RoommateMatchingService,
   ) {}
 
-  // (pending, accepted, rejected)
-  @MessagePattern({ cmd: 'get_interests' })
-  async getInterests() {
-    return this.roommateMatchingService.getAllInterests();
+  // Create new interest (seeker expresses interest in a room)
+  @MessagePattern('interest.create')
+  createInterest(@Payload() createInterestDto: CreateInterestDto) {
+    return this.roommateMatchingService.createInterest(createInterestDto);
   }
 
-  @MessagePattern({ cmd: 'accept_interest' })
-  async acceptInterest(@Payload() data: { id: string }) {
+  // Get specific interest by ID
+  @MessagePattern('interest.findById')
+  getInterestById(@Payload() data: { id: string }) {
+    return this.roommateMatchingService.getInterestById(data.id);
+  }
+
+  // Update interest status (accept/reject)
+  @MessagePattern('interest.updateStatus')
+  updateInterestStatus(
+    @Payload() data: { id: string; updateDto: UpdateInterestStatusDto },
+  ) {
+    return this.roommateMatchingService.updateInterestStatus(
+      data.id,
+      data.updateDto,
+    );
+  }
+
+  // Accept interest (convenience endpoint)
+  @MessagePattern('interest.accept')
+  acceptInterest(@Payload() data: { id: string }) {
     return this.roommateMatchingService.acceptInterest(data.id);
   }
 
-  @MessagePattern({ cmd: 'reject_interest' })
-  async rejectInterest(@Payload() data: { id: string }) {
+  // Reject interest (convenience endpoint)
+  @MessagePattern('interest.reject')
+  rejectInterest(@Payload() data: { id: string }) {
     return this.roommateMatchingService.rejectInterest(data.id);
   }
 
-  @MessagePattern({ cmd: 'get_all_matches' })
-  async getAllMatches() {
-    return this.roommateMatchingService.getAllMatches();
+  // Get interests for host (Interest Management screen)
+  @MessagePattern('interest.findByHost')
+  getInterestsForHost(
+    @Payload() data: { hostId: string; status?: InterestStatus },
+  ) {
+    return this.roommateMatchingService.getInterestsForHost(
+      data.hostId,
+      data.status,
+    );
   }
 
-  @MessagePattern({ cmd: 'get_matches_by_user' })
-  async getMatchesByUser(@Payload() data: { userId: string }) {
-    return this.roommateMatchingService.getMatchesByUser(data.userId);
+  // Get interests for seeker
+  @MessagePattern('interest.findBySeeker')
+  getInterestsForSeeker(
+    @Payload() data: { seekerId: string; status?: InterestStatus },
+  ) {
+    return this.roommateMatchingService.getInterestsForSeeker(
+      data.seekerId,
+      data.status,
+    );
   }
 
-  @MessagePattern({ cmd: 'delete_match' })
-  async deleteMatch(@Payload() data: { id: string }) {
-    return this.roommateMatchingService.deleteMatch(data.id);
+  // Get interest counts for host (for tab badges: Pending (3), Accepted (1), Rejected (1))
+  @MessagePattern('interest.getHostCounts')
+  getInterestCounts(@Payload() data: { hostId: string }) {
+    return this.roommateMatchingService.getInterestCounts(data.hostId);
   }
 
-  @MessagePattern({ cmd: 'match_roommates' })
-  async matchRoommates(@Payload() dto: any) {
-    return this.roommateMatchingService.matchRoommates(dto);
+  // Get matches as host (My Matches - As Host section)
+  @MessagePattern('match.findAsHost')
+  getMatchesAsHost(@Payload() data: { hostId: string }) {
+    return this.roommateMatchingService.getMatchesAsHost(data.hostId);
+  }
+
+  // Get matches as seeker (My Matches - As Seeker section)
+  @MessagePattern('match.findAsSeeker')
+  getMatchesAsSeeker(@Payload() data: { seekerId: string }) {
+    return this.roommateMatchingService.getMatchesAsSeeker(data.seekerId);
+  }
+
+  // Get all matches for a user (both as host and seeker)
+  @MessagePattern('match.findByUser')
+  getAllMatches(@Payload() data: { userId: string }) {
+    return this.roommateMatchingService.getAllMatches(data.userId);
   }
 }
