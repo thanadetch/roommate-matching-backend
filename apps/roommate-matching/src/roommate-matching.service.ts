@@ -43,7 +43,7 @@ export class RoommateMatchingService implements OnModuleInit {
   ): Promise<RoomResponseDto | null> {
     try {
       return await firstValueFrom(
-        this.roomsClient.send({ cmd: 'get_room_by_id' }, roomId),
+        this.roomsClient.send('rooms.findOne', roomId),
       );
     } catch (error) {
       console.warn(`Failed to fetch room details for ID ${roomId}:`, error);
