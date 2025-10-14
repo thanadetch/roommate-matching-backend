@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../src/prisma.service';
-import { Prisma, RoomListing } from '../generated/prisma';  
+import { Prisma, RoomListing } from '../generated/prisma';
 
 @Injectable()
 export class RoomsService {
@@ -13,33 +13,48 @@ export class RoomsService {
     description?: string;
     location: string;
     pricePerMonth: number;
-    rules?: any;
-    availableFrom?: Date;
-    lifestyle?: string[]; // field lifestyle
+    availableFrom?: string | Date;
+    noSmoking?: boolean;
+    petFriendly?: boolean;
+    quiet?: boolean;
+    nightOwl?: boolean;
   }): Promise<RoomListing> {
-    return this.prisma.roomListing.create({ data });
+    return this.prisma.roomListing.create({
+      data: {
+        ...data,
+        availableFrom: data.availableFrom ? new Date(data.availableFrom) : null,
+      },
+    });
   }
 
   // READ ALL
   async getRooms(): Promise<RoomListing[]> {
-    return this.prisma.roomListing.findMany();
+    return this.prisma.roomListing.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  // BROWSE / FILTER ROOMS
+  // FILTER / BROWSE
   async browseRooms(filters: {
     location?: string;
     minPrice?: number;
     maxPrice?: number;
-    lifestyle?: string[];
+    noSmoking?: boolean;
+    petFriendly?: boolean;
+    quiet?: boolean;
+    nightOwl?: boolean;
   }): Promise<RoomListing[]> {
-    const { location, minPrice, maxPrice, lifestyle } = filters;
+    const { location, minPrice, maxPrice, noSmoking, petFriendly, quiet, nightOwl } = filters;
 
     return this.prisma.roomListing.findMany({
       where: {
         ...(location && { location: { contains: location, mode: 'insensitive' } }),
         ...(minPrice && { pricePerMonth: { gte: Number(minPrice) } }),
         ...(maxPrice && { pricePerMonth: { lte: Number(maxPrice) } }),
-        ...(lifestyle && lifestyle.length > 0 && { lifestyle: { hasSome: lifestyle } }),
+        ...(noSmoking !== undefined && { noSmoking }),
+        ...(petFriendly !== undefined && { petFriendly }),
+        ...(quiet !== undefined && { quiet }),
+        ...(nightOwl !== undefined && { nightOwl }),
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -62,10 +77,9 @@ export class RoomsService {
 
   // DELETE
   async deleteRoom(id: string): Promise<{ message: string }> {
-  await this.prisma.roomListing.delete({
-    where: { id },
-  });
-  return { message: 'Room deleted successfully' };
-}
-
+    await this.prisma.roomListing.delete({
+      where: { id },
+    });
+    return { message: 'Room deleted successfully' };
+  }
 }

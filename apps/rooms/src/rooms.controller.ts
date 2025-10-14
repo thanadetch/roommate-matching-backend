@@ -21,7 +21,6 @@ export class RoomsController {
   // Browse Rooms with filters
   @MessagePattern({ cmd: 'browse_rooms' })
   async handleBrowseRooms(@Payload() filters: any) {
-    // filters = { location, minPrice, maxPrice, lifestyle }
     return this.roomsService.browseRooms(filters);
   }
 
