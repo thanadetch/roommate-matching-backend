@@ -1,14 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
+// Room Listing Service - Boolean Rules Version
 
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
-
 
 datasource db {
   provider = "postgresql"
@@ -21,19 +17,23 @@ enum ListingStatus {
 }
 
 model RoomListing {
-  id            String        @id @default(uuid())
-  hostId        String       // Refer Profile.id (Diff DB)
-  title         String
-  description   String?
-  location      String
-  pricePerMonth Int
-  rules         Json?         // { noSmoking:true, petFriendly:false, quiet:true, nightOwl:false }
-  lifestyle     String[]      // to filter such as ["Quiet", "Pet Friendly"]
-  availableFrom DateTime?
-  status        ListingStatus @default(OPEN)
+  id              String        @id @default(uuid())
+  hostId          String        // Refer to Profile.id
+  title           String
+  description     String?
+  location        String
+  pricePerMonth   Int
+  availableFrom   DateTime?
+  status          ListingStatus @default(OPEN)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  noSmoking       Boolean       @default(false)
+  noPets          Boolean       @default(false)
+  quiet           Boolean       @default(false)
+  nightOwl        Boolean       @default(false)
+  petFriendly     Boolean       @default(false)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([hostId])
   @@index([status, location])
