@@ -5,7 +5,8 @@ import {
   Inject,
   OnModuleInit,
 } from '@nestjs/common';
-import { ClientProxy, ClientGrpc } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
+import type { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { PrismaService } from './prisma.service';
 import { CreateInterestDto } from './dto/create-interest.dto';
