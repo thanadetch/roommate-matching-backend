@@ -44,12 +44,10 @@ export class InterestResponseDto {
   room?: RoomResponseDto | null;
 
   @ValidateNested()
-  @Type(() => ProfileResponseDto)
   @IsOptional()
   host?: ProfileResponseDto | null;
 
   @ValidateNested()
-  @Type(() => ProfileResponseDto)
   @IsOptional()
   seeker?: ProfileResponseDto | null;
 }
