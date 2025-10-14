@@ -20,32 +20,32 @@ export class RoomsGatewayController {
   constructor(private readonly roomsService: RoomsGatewayService) {}
 
   @Post()
-  async create(@Body() dto: CreateRoomDto) {
+  create(@Body() dto: CreateRoomDto) {
     return this.roomsService.createRoom(dto);
   }
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.roomsService.getAllRooms();
   }
 
   @Get('browse')
-  async browse(@Query() query: BrowseRoomsDto) {
+  browse(@Query() query: BrowseRoomsDto) {
     return this.roomsService.browseRooms(query);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.roomsService.getRoomById(id);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateRoomDto) {
-    return this.roomsService.updateRoom(id, dto);
+  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
+    return this.roomsService.updateRoom(id, updateRoomDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  remove(@Param('id') id: string) {
     return this.roomsService.deleteRoom(id);
   }
 }
