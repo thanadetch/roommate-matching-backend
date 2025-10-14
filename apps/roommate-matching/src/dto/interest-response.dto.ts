@@ -8,6 +8,7 @@ import {
 import { Type } from 'class-transformer';
 import { InterestStatus } from '../../generated/prisma';
 import { RoomResponseDto } from '../../../rooms/src/dto/room-response.dto';
+import { ProfileResponseDto } from '../../../profiles/src/dto/profile-response.dto';
 
 export class InterestResponseDto {
   @IsString()
@@ -41,4 +42,14 @@ export class InterestResponseDto {
   @Type(() => RoomResponseDto)
   @IsOptional()
   room?: RoomResponseDto | null;
+
+  @ValidateNested()
+  @Type(() => ProfileResponseDto)
+  @IsOptional()
+  host?: ProfileResponseDto | null;
+
+  @ValidateNested()
+  @Type(() => ProfileResponseDto)
+  @IsOptional()
+  seeker?: ProfileResponseDto | null;
 }

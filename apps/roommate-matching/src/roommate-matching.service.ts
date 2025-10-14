@@ -3,9 +3,10 @@ import {
   NotFoundException,
   BadRequestException,
   Inject,
+  OnModuleInit,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientProxy, ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { PrismaService } from './prisma.service';
 import { CreateInterestDto } from './dto/create-interest.dto';
 import { UpdateInterestStatusDto } from './dto/update-interest-status.dto';
@@ -13,16 +14,27 @@ import { InterestResponseDto } from './dto/interest-response.dto';
 import { InterestCountsResponseDto } from './dto/interest-counts-response.dto';
 import { MatchesResponseDto } from './dto/matches-response.dto';
 import { RoomResponseDto } from '../../rooms/src/dto/room-response.dto';
+import { ProfileResponseDto } from '../../profiles/src/dto';
 import { InterestStatus } from '@app/common';
 import { Interest } from '../generated/prisma';
+import { ProfilesGrpcService } from '@app/common';
 
 @Injectable()
-export class RoommateMatchingService {
+export class RoommateMatchingService implements OnModuleInit {
+  private profilesService: ProfilesGrpcService;
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject('ROOMS_SERVICE')
     private readonly roomsClient: ClientProxy,
+    @Inject('PROFILES_PACKAGE')
+    private readonly profilesClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.profilesService =
+      this.profilesClient.getService<ProfilesGrpcService>('ProfilesService');
+  }
 
   // Helper method to fetch room details
   private async getRoomDetails(
@@ -38,16 +50,40 @@ export class RoommateMatchingService {
     }
   }
 
-  // Helper method to enrich interests with room data
-  private async enrichInterestsWithRoomData(
+  // Helper method to fetch profile details
+  private async getProfileDetails(
+    profileId: string,
+  ): Promise<ProfileResponseDto | null> {
+    try {
+      const response = await lastValueFrom(
+        this.profilesService.getProfileById({ id: profileId }),
+      );
+      return response?.result || null;
+    } catch (error) {
+      console.warn(
+        `Failed to fetch profile details for ID ${profileId}:`,
+        error,
+      );
+      return null;
+    }
+  }
+
+  // Helper method to enrich interests with room and profile data
+  private async enrichInterestsWithRoomAndProfileData(
     interests: Interest[],
   ): Promise<InterestResponseDto[]> {
     const enrichedInterests = await Promise.all(
       interests.map(async (interest) => {
-        const roomDetails = await this.getRoomDetails(interest.roomId);
+        const [roomDetails, hostProfile, seekerProfile] = await Promise.all([
+          this.getRoomDetails(interest.roomId),
+          this.getProfileDetails(interest.hostId),
+          this.getProfileDetails(interest.seekerId),
+        ]);
         return {
           ...interest,
           room: roomDetails,
+          host: hostProfile,
+          seeker: seekerProfile,
         };
       }),
     );
@@ -83,11 +119,18 @@ export class RoommateMatchingService {
       },
     });
 
-    // Enrich with room data
-    const roomDetails = await this.getRoomDetails(roomId);
+    // Enrich with room and profile data
+    const [roomDetails, hostProfile, seekerProfile] = await Promise.all([
+      this.getRoomDetails(roomId),
+      this.getProfileDetails(hostId),
+      this.getProfileDetails(seekerId),
+    ]);
+
     return {
       ...newInterest,
       room: roomDetails,
+      host: hostProfile,
+      seeker: seekerProfile,
     };
   }
 
@@ -113,11 +156,18 @@ export class RoommateMatchingService {
       data: { status: updateDto.status },
     });
 
-    // Enrich with room data
-    const roomDetails = await this.getRoomDetails(updatedInterest.roomId);
+    // Enrich with room and profile data
+    const [roomDetails, hostProfile, seekerProfile] = await Promise.all([
+      this.getRoomDetails(updatedInterest.roomId),
+      this.getProfileDetails(updatedInterest.hostId),
+      this.getProfileDetails(updatedInterest.seekerId),
+    ]);
+
     return {
       ...updatedInterest,
       room: roomDetails,
+      host: hostProfile,
+      seeker: seekerProfile,
     };
   }
 
@@ -136,8 +186,8 @@ export class RoommateMatchingService {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Enrich all interests with room data
-    return this.enrichInterestsWithRoomData(interests);
+    // Enrich all interests with room and profile data
+    return this.enrichInterestsWithRoomAndProfileData(interests);
   }
 
   // Get interests sent by seeker
@@ -155,8 +205,8 @@ export class RoommateMatchingService {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Enrich all interests with room data
-    return this.enrichInterestsWithRoomData(interests);
+    // Enrich all interests with room and profile data
+    return this.enrichInterestsWithRoomAndProfileData(interests);
   }
 
   // Get matches for host (accepted interests where user is host)
@@ -169,8 +219,8 @@ export class RoommateMatchingService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    // Enrich all matches with room data
-    return this.enrichInterestsWithRoomData(matches);
+    // Enrich all matches with room and profile data
+    return this.enrichInterestsWithRoomAndProfileData(matches);
   }
 
   // Get matches for seeker (accepted interests where user is seeker)
@@ -183,8 +233,8 @@ export class RoommateMatchingService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    // Enrich all matches with room data
-    return this.enrichInterestsWithRoomData(matches);
+    // Enrich all matches with room and profile data
+    return this.enrichInterestsWithRoomAndProfileData(matches);
   }
 
   // Get all matches for a user (both as host and seeker)
@@ -206,10 +256,10 @@ export class RoommateMatchingService {
       }),
     ]);
 
-    // Enrich both arrays with room data
+    // Enrich both arrays with room and profile data
     const [asHost, asSeeker] = await Promise.all([
-      this.enrichInterestsWithRoomData(asHostRaw),
-      this.enrichInterestsWithRoomData(asSeekerRaw),
+      this.enrichInterestsWithRoomAndProfileData(asHostRaw),
+      this.enrichInterestsWithRoomAndProfileData(asSeekerRaw),
     ]);
 
     return {
@@ -246,11 +296,18 @@ export class RoommateMatchingService {
       throw new NotFoundException('Interest not found');
     }
 
-    // Enrich with room data
-    const roomDetails = await this.getRoomDetails(interest.roomId);
+    // Enrich with room and profile data
+    const [roomDetails, hostProfile, seekerProfile] = await Promise.all([
+      this.getRoomDetails(interest.roomId),
+      this.getProfileDetails(interest.hostId),
+      this.getProfileDetails(interest.seekerId),
+    ]);
+
     return {
       ...interest,
       room: roomDetails,
+      host: hostProfile,
+      seeker: seekerProfile,
     };
   }
 
