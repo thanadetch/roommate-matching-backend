@@ -17,25 +17,20 @@ enum ListingStatus {
 }
 
 model RoomListing {
-  id              String        @id @default(uuid())
-  hostId          String        // Refer to Profile.id
-  title           String
-  description     String?
-  location        String
-  pricePerMonth   Int
-  availableFrom   DateTime?
-  status          ListingStatus @default(OPEN)
+  id            String        @id @default(uuid())
+  hostId        String // Refer to Profile.id
+  title         String
+  description   String?
+  location      String
+  pricePerMonth Int
+  availableFrom DateTime?
+  status        ListingStatus @default(OPEN)
 
-  noSmoking       Boolean       @default(false)
-  noPets          Boolean       @default(false)
-  quiet           Boolean       @default(false)
-  nightOwl        Boolean       @default(false)
-  petFriendly     Boolean       @default(false)
+  noSmoking Boolean @default(false)
+  noPets    Boolean @default(false)
+  quiet     Boolean @default(false)
+  nightOwl  Boolean @default(false)
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  @@index([hostId])
-  @@index([status, location])
-  @@index([pricePerMonth])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
