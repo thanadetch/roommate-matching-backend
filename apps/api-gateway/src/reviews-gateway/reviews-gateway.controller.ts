@@ -16,9 +16,9 @@ import type {
   UpdateReviewDto,
   GetReviewsDto,
   ReviewsResponse,
-  AuthenticatedRequest,
 } from '../../../reviews/src/dto';
 import { Review } from '../../../reviews/generated/prisma';
+import type { AuthenticatedRequest } from '../../../auth/src/dto';
 
 @Controller('reviews')
 export class ReviewsGatewayController {
