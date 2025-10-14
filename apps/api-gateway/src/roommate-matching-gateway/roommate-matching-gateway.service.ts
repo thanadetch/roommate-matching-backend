@@ -1,14 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import {
-  InterestResponseDto,
-  InterestCountsResponseDto,
-  MatchesResponseDto,
-} from '@app/common';
 import { CreateInterestDto } from '../../../roommate-matching/src/dto/create-interest.dto';
 import { UpdateInterestStatusDto } from '../../../roommate-matching/src/dto/update-interest-status.dto';
 import { GetInterestsDto } from '../../../roommate-matching/src/dto/get-interests.dto';
+import { InterestResponseDto } from '../../../roommate-matching/src/dto/interest-response.dto';
+import { InterestCountsResponseDto } from '../../../roommate-matching/src/dto/interest-counts-response.dto';
+import { MatchesResponseDto } from '../../../roommate-matching/src/dto/matches-response.dto';
 
 @Injectable()
 export class RoommateMatchingGatewayService {

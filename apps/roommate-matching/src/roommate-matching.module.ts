@@ -3,7 +3,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RoommateMatchingController } from './roommate-matching.controller';
 import { RoommateMatchingService } from './roommate-matching.service';
 import { PrismaService } from './prisma.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -11,14 +11,27 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: './apps/roommate-matching/.env',
     }),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'ROOMS_SERVICE',
-        transport: Transport.RMQ,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.get<string>('RABBITMQ_URL', '')],
+            queue: config.get<string>('ROOM_QUEUE_NAME', 'rooms_queue'),
+          },
+        }),
+      },
+    ]),
+    ClientsModule.register([
+      {
+        name: 'PROFILES_PACKAGE',
+        transport: Transport.GRPC,
         options: {
-          urls: [process.env.RABBITMQ_URL || 'amqp://localhost:5672'],
-          queue: 'rooms_queue',
-          queueOptions: { durable: true },
+          package: 'profiles',
+          protoPath: 'libs/photos/src/profiles.proto',
         },
       },
     ]),

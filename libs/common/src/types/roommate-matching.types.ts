@@ -19,6 +19,20 @@ export interface GetInterestsQueryDto {
   status?: InterestStatus;
 }
 
+export interface RoomDto {
+  id: string;
+  hostId: string;
+  title: string;
+  description?: string;
+  location: string;
+  pricePerMonth: number;
+  rules?: any;
+  availableFrom?: Date;
+  lifestyle?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface InterestResponseDto {
   id: string;
   roomId: string;
@@ -28,6 +42,7 @@ export interface InterestResponseDto {
   status: InterestStatus;
   createdAt: Date;
   updatedAt: Date;
+  room?: RoomDto | null; // Added room object
 }
 
 export interface InterestCountsResponseDto {
