@@ -1,12 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { RoomsGatewayService } from './rooms-gateway.service';
+import {
+  CreateRoomDto,
+  UpdateRoomDto,
+  BrowseRoomsDto,
+} from '../../../rooms/src/dto';
 
 @Controller('rooms')
 export class RoomsGatewayController {
   constructor(private readonly roomsService: RoomsGatewayService) {}
 
   @Post()
-  async create(@Body() dto: any) {
+  async create(@Body() dto: CreateRoomDto) {
     return this.roomsService.createRoom(dto);
   }
 
@@ -16,7 +30,7 @@ export class RoomsGatewayController {
   }
 
   @Get('browse')
-  async browse(@Query() query: any) {
+  async browse(@Query() query: BrowseRoomsDto) {
     return this.roomsService.browseRooms(query);
   }
 
@@ -26,7 +40,7 @@ export class RoomsGatewayController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: any) {
+  async update(@Param('id') id: string, @Body() dto: UpdateRoomDto) {
     return this.roomsService.updateRoom(id, dto);
   }
 

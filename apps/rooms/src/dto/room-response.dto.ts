@@ -2,10 +2,16 @@ import {
   IsString,
   IsOptional,
   IsNumber,
-  IsArray,
+  IsBoolean,
   IsDate,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+
+enum ListingStatus {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+}
 
 export class RoomResponseDto {
   @IsString()
@@ -27,18 +33,25 @@ export class RoomResponseDto {
   @IsNumber()
   pricePerMonth: number;
 
-  @IsOptional()
-  rules?: any;
-
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   availableFrom?: Date;
 
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  lifestyle?: string[];
+  @IsEnum(ListingStatus)
+  status: ListingStatus;
+
+  @IsBoolean()
+  noSmoking: boolean;
+
+  @IsBoolean()
+  noPets: boolean;
+
+  @IsBoolean()
+  quiet: boolean;
+
+  @IsBoolean()
+  nightOwl: boolean;
 
   @IsDate()
   @Type(() => Date)

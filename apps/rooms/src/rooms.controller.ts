@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CreateRoomDto, UpdateRoomDto, BrowseRoomsDto } from './dto';
 
 @Controller('rooms')
 export class RoomsController {
@@ -8,7 +9,7 @@ export class RoomsController {
 
   // Create Room
   @MessagePattern('rooms.create')
-  async handleCreateRoom(@Payload() data: any) {
+  async handleCreateRoom(@Payload() data: CreateRoomDto) {
     return this.roomsService.createRoom(data);
   }
 
@@ -20,7 +21,7 @@ export class RoomsController {
 
   // Browse Rooms with filters
   @MessagePattern('rooms.browse')
-  async handleBrowseRooms(@Payload() filters: any) {
+  async handleBrowseRooms(@Payload() filters: BrowseRoomsDto) {
     return this.roomsService.browseRooms(filters);
   }
 
@@ -32,7 +33,9 @@ export class RoomsController {
 
   // Update Room
   @MessagePattern('rooms.update')
-  async handleUpdateRoom(@Payload() payload: { id: string; data: any }) {
+  async handleUpdateRoom(
+    @Payload() payload: { id: string; data: UpdateRoomDto },
+  ) {
     return this.roomsService.updateRoom(payload.id, payload.data);
   }
 

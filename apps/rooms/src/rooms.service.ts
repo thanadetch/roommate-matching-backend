@@ -1,24 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../src/prisma.service';
 import { Prisma, RoomListing } from '../generated/prisma';
+import {
+  CreateRoomDto,
+  UpdateRoomDto,
+  BrowseRoomsDto,
+  RoomResponseDto,
+} from './dto';
 
 @Injectable()
 export class RoomsService {
   constructor(private prisma: PrismaService) {}
 
   // CREATE
-  async createRoom(data: {
-    hostId: string;
-    title: string;
-    description?: string;
-    location: string;
-    pricePerMonth: number;
-    availableFrom?: string | Date;
-    noSmoking?: boolean;
-    petFriendly?: boolean;
-    quiet?: boolean;
-    nightOwl?: boolean;
-  }): Promise<RoomListing> {
+  async createRoom(data: CreateRoomDto): Promise<RoomListing> {
     return this.prisma.roomListing.create({
       data: {
         ...data,
@@ -35,20 +30,22 @@ export class RoomsService {
   }
 
   // FILTER / BROWSE
-  async browseRooms(filters: {
-    location?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    noSmoking?: boolean;
-    petFriendly?: boolean;
-    quiet?: boolean;
-    nightOwl?: boolean;
-  }): Promise<RoomListing[]> {
-    const { location, minPrice, maxPrice, noSmoking, petFriendly, quiet, nightOwl } = filters;
+  async browseRooms(filters: BrowseRoomsDto): Promise<RoomListing[]> {
+    const {
+      location,
+      minPrice,
+      maxPrice,
+      noSmoking,
+      petFriendly,
+      quiet,
+      nightOwl,
+    } = filters;
 
     return this.prisma.roomListing.findMany({
       where: {
-        ...(location && { location: { contains: location, mode: 'insensitive' } }),
+        ...(location && {
+          location: { contains: location, mode: 'insensitive' },
+        }),
         ...(minPrice && { pricePerMonth: { gte: Number(minPrice) } }),
         ...(maxPrice && { pricePerMonth: { lte: Number(maxPrice) } }),
         ...(noSmoking !== undefined && { noSmoking }),
@@ -68,7 +65,7 @@ export class RoomsService {
   }
 
   // UPDATE
-  async updateRoom(id: string, data: Prisma.RoomListingUpdateInput): Promise<RoomListing> {
+  async updateRoom(id: string, data: UpdateRoomDto): Promise<RoomListing> {
     return this.prisma.roomListing.update({
       where: { id },
       data,
