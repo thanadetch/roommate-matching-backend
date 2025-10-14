@@ -7,37 +7,37 @@ export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   // Create Room
-  @MessagePattern({ cmd: 'create_room' })
+  @MessagePattern('rooms.create')
   async handleCreateRoom(@Payload() data: any) {
     return this.roomsService.createRoom(data);
   }
 
   // Get All Rooms
-  @MessagePattern({ cmd: 'get_all_rooms' })
+  @MessagePattern('rooms.findAll')
   async handleGetAllRooms() {
     return this.roomsService.getRooms();
   }
 
   // Browse Rooms with filters
-  @MessagePattern({ cmd: 'browse_rooms' })
+  @MessagePattern('rooms.browse')
   async handleBrowseRooms(@Payload() filters: any) {
     return this.roomsService.browseRooms(filters);
   }
 
   // Get Room By ID
-  @MessagePattern({ cmd: 'get_room_by_id' })
+  @MessagePattern('rooms.findOne')
   async handleGetRoomById(@Payload() id: string) {
     return this.roomsService.getRoomById(id);
   }
 
   // Update Room
-  @MessagePattern({ cmd: 'update_room' })
+  @MessagePattern('rooms.update')
   async handleUpdateRoom(@Payload() payload: { id: string; data: any }) {
     return this.roomsService.updateRoom(payload.id, payload.data);
   }
 
   // Delete Room
-  @MessagePattern({ cmd: 'delete_room' })
+  @MessagePattern('rooms.remove')
   async handleDeleteRoom(@Payload() id: string) {
     return this.roomsService.deleteRoom(id);
   }

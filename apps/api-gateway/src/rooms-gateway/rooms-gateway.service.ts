@@ -5,28 +5,27 @@ import { ClientProxy } from '@nestjs/microservices';
 export class RoomsGatewayService {
   constructor(@Inject('ROOMS_SERVICE') private readonly client: ClientProxy) {}
 
-  async createRoom(dto: any) {
-    return this.client.send({ cmd: 'create_room' }, dto);
+  createRoom(dto: any) {
+    return this.client.send('rooms.create', dto);
   }
 
-  async getAllRooms() {
-    return this.client.send({ cmd: 'get_all_rooms' }, {});
+  getAllRooms() {
+    return this.client.send('rooms.findAll', {});
   }
 
-  async getRoomById(id: string) {
-    return this.client.send({ cmd: 'get_room_by_id' }, id);
+  getRoomById(id: string) {
+    return this.client.send('rooms.findOne', id);
   }
 
-  async updateRoom(id: string, dto: any) {
-  return this.client.send({ cmd: 'update_room' }, { id, data: dto });
+  updateRoom(id: string, dto: any) {
+    return this.client.send('rooms.update', { id, data: dto });
   }
 
-  async deleteRoom(id: string) {
-    return this.client.send({ cmd: 'delete_room' }, id);
+  deleteRoom(id: string) {
+    return this.client.send('rooms.remove', id);
   }
 
-  async browseRooms(query: any) {
-  return this.client.send({ cmd: 'browse_rooms' }, query);
-}
-
+  browseRooms(query: any) {
+    return this.client.send('rooms.browse', query);
+  }
 }
