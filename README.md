@@ -1,225 +1,342 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 # Roommate Matching Backend
 
 A microservices-based backend system for roommate matching built with NestJS, featuring multiple specialized services communicating via gRPC and message queues.
 
-## Architecture
+## 🏗️ Project Overview
 
-This project consists of the following microservices:
-- **API Gateway** - Main entry point and request routing
-- **Auth Service** - Authentication and authorization
-- **Profiles Service** - User profile management
-- **Rooms Service** - Room listings and management
-- **Roommate Matching Service** - Matching algorithm and recommendations
-- **Reviews Service** - User reviews and ratings
-- **Notifications Service** - Real-time notifications
+This project is designed to help people find compatible roommates through an intelligent matching system. The backend is built using a microservices architecture, where each service handles a specific domain of the application.
 
-## Prerequisites
+### Architecture
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Docker and Docker Compose
-- PostgreSQL (via Docker)
-- MongoDB (via Docker)
-- RabbitMQ (via Docker)
+The system consists of the following microservices:
 
-## Project Setup
+- **API Gateway** (Port 3000) - Main HTTP entry point and request routing
+- **Auth Service** - Authentication microservice (RabbitMQ)
+- **Profiles Service** - User profile management (gRPC)
+- **Rooms Service** - Room listings and property management (RabbitMQ)
+- **Roommate Matching Service** - Intelligent matching algorithms (RabbitMQ)
+- **Reviews Service** - User reviews and ratings system (RabbitMQ)
+- **Notifications Service** - Real-time notifications and messaging (RabbitMQ)
 
-### 1. Clone and Install Dependencies
+**Communication Architecture:**
+- **API Gateway** serves as the single HTTP entry point on port 3000
+- **Profiles Service** uses gRPC for synchronous communication
+- **All other microservices** communicate via RabbitMQ message queues
+- **No direct HTTP access** to individual microservices (true microservice architecture)
+
+### Technology Stack
+
+- **Framework**: NestJS (Node.js)
+- **Database**: PostgreSQL (primary), MongoDB (notifications)
+- **Message Queue**: RabbitMQ
+- **Communication**: 
+  - gRPC for Profiles service (synchronous)
+  - RabbitMQ for all other services (asynchronous messaging)
+- **ORM**: Prisma
+- **Authentication**: JWT with Passport
+- **Containerization**: Docker & Docker Compose
+
+## 📋 Prerequisites
+
+Before starting, ensure you have the following installed:
+
+- **Node.js** (v18 or higher) - [Download here](https://nodejs.org/)
+- **npm** or **yarn** - Package manager
+- **Docker** and **Docker Compose** - [Download here](https://docs.docker.com/get-docker/)
+- **Git** - Version control
+
+## 🚀 Quick Start Guide
+
+### Step 1: Clone the Repository
 
 ```bash
-# Clone the repository
 git clone <repository-url>
 cd roommate-matching-backend
+```
 
-# Install dependencies
+### Step 2: Install Dependencies
+
+```bash
 npm install
 ```
 
-### 2. Start Infrastructure Services
+### Step 3: Start Infrastructure Services
+
+Start the required databases and message queue using Docker:
 
 ```bash
-# Start PostgreSQL, MongoDB, and RabbitMQ using Docker Compose
+# Start all infrastructure services (PostgreSQL, MongoDB, RabbitMQ)
 docker-compose up -d
 
-# Verify services are running
+# Verify all services are running
 docker-compose ps
 ```
 
-### 3. Environment Configuration
+You should see:
+- ✅ PostgreSQL running on port 5432
+- ✅ MongoDB running on port 27017
+- ✅ RabbitMQ running on ports 5672 (AMQP) and 15672 (Management UI)
 
-Create `.env` files for each service in their respective directories:
+### Step 4: Environment Configuration
 
+Create environment files for each service. You can either copy from the provided development templates or create them manually:
+
+**Option A: Copy from Development Templates (Recommended)**
 ```bash
-# Example for profiles service
+# Copy .env.dev files to .env for all services
+cp apps/auth/.env.dev apps/auth/.env
+cp apps/profiles/.env.dev apps/profiles/.env
+cp apps/rooms/.env.dev apps/rooms/.env
+cp apps/notifications/.env.dev apps/notifications/.env
+cp apps/reviews/.env.dev apps/reviews/.env
+cp apps/roommate-matching/.env.dev apps/roommate-matching/.env
+cp apps/api-gateway/.env.dev apps/api-gateway/.env
+```
+
+**Option B: Create Empty Files Manually**
+```bash
+# Create .env files for all services
+touch apps/auth/.env
 touch apps/profiles/.env
 touch apps/rooms/.env
 touch apps/notifications/.env
 touch apps/reviews/.env
 touch apps/roommate-matching/.env
-touch apps/auth/.env
+touch apps/api-gateway/.env
 ```
 
-Configure your environment variables (database connections, ports, etc.) in each `.env` file.
+> **Note**: After copying from .env.dev files, review and update any values specific to your local environment or security requirements.
 
-### 4. Database Setup
+### Step 5: Database Setup
 
-Generate Prisma clients and run migrations for services that use databases:
+Generate Prisma clients and run migrations:
 
 ```bash
-# Profiles service
-npm run prisma:profiles:generate
-npm run prisma:profiles:migrate
-
-# Rooms service  
-npm run prisma:rooms:generate
-npm run prisma:rooms:migrate
-
-# Notifications service
-npm run prisma:notifications:generate
-npm run prisma:notifications:push
-
-# Reviews service
-npm run prisma:reviews:generate
-npm run prisma:reviews:migrate
-
-# Roommate matching service
-npm run prisma:roommate-matching:generate
-npm run prisma:roommate-matching:migrate
+# Setup all databases at once
+npm run prisma:profiles:generate && npm run prisma:profiles:migrate
+npm run prisma:rooms:generate && npm run prisma:rooms:migrate
+npm run prisma:reviews:generate && npm run prisma:reviews:migrate
+npm run prisma:roommate-matching:generate && npm run prisma:roommate-matching:migrate
+npm run prisma:notifications:generate && npm run prisma:notifications:push
 ```
 
-## Starting the Application
+## 🏃‍♂️ Running the Application
 
-### Development Mode
+### Option 1: Start All Services (Recommended for Full Development)
 
-Start all services in development mode with hot reload:
+Open 7 terminal windows/tabs and run each service:
 
 ```bash
-# Start API Gateway (main entry point)
+# Terminal 1 - API Gateway (Start this first)
 npm run start:api-gateway
 
-# In separate terminals, start each microservice:
+# Terminal 2 - Auth Service
 npm run start:auth
+
+# Terminal 3 - Profiles Service
 npm run start:profiles
+
+# Terminal 4 - Rooms Service
 npm run start:rooms
+
+# Terminal 5 - Roommate Matching Service
 npm run start:roommate-matching
+
+# Terminal 6 - Reviews Service
 npm run start:reviews
+
+# Terminal 7 - Notifications Service
 npm run start:notifications
 ```
 
-### Alternative: Start Individual Services
+### Option 2: Start Services Individually
 
-You can also start services individually as needed:
+For focused development, start only what you need:
 
 ```bash
-# Start specific service
-npm run start:profiles
-npm run start:rooms
+# Always start API Gateway first
+npm run start:api-gateway
+
+# Then start specific services based on what you're working on
+npm run start:profiles    # For user profile features
+npm run start:auth       # For authentication features
+npm run start:rooms      # For room management features
 # etc.
 ```
 
-## Service Ports
+## 🔍 Verification & Testing
 
-Each service runs on a different port:
-- API Gateway: 3000 (main entry point)
-- Auth Service: 3001
-- Profiles Service: 3002
-- Rooms Service: 3003
-- Roommate Matching Service: 3004
-- Reviews Service: 3005
-- Notifications Service: 3006
+### Check Service Health
 
-## Infrastructure Services
+Once all services are running, verify the system is working:
 
-- **PostgreSQL**: localhost:5432
-  - Username: user
-  - Password: password
-  - Database: roommate_matching
+**Primary Access Point:**
+- **API Gateway**: http://localhost:3000 (Main HTTP entry point)
 
-- **MongoDB**: localhost:27017
-  - Username: user
-  - Password: password
+**Infrastructure Services:**
+- **RabbitMQ Management UI**: http://localhost:15672 (admin/admin123)
+- **PostgreSQL**: localhost:5432 (user/password)
+- **MongoDB**: localhost:27017 (user/password)
 
-- **RabbitMQ**: localhost:5672
-  - Management UI: http://localhost:15672
-  - Username: admin
-  - Password: admin123
+**Microservice Status:**
+The individual microservices don't expose HTTP ports directly. They communicate internally via:
+- **gRPC service** (profiles only)
+- **RabbitMQ queues** (auth, rooms, roommate-matching, reviews, notifications)
 
-## Testing
-
+To verify microservices are running, check:
 ```bash
-# Run unit tests
-npm run test
+# Check if API Gateway is listening on port 3000
+npm run start:api-gateway  # Should show "Application is running on: http://[::1]:3000"
 
-# Run tests with coverage
-npm run test:cov
+# Check RabbitMQ queues to see if services are connected
+# Visit http://localhost:15672 and look for active queues
 
-# Run e2e tests
-npm run test:e2e
+# Check application logs for each service startup
 ```
 
-## Code Quality
+### API Testing
 
+Test the complete system through the API Gateway:
+- **Postman** - Import the API collection (if available)
+- **curl** - Command line testing via API Gateway
+
+Example API calls:
 ```bash
-# Lint code
-npm run lint
+# Test API Gateway health
+curl http://localhost:3000/health
 
-# Format code
-npm run format
+# Test authentication endpoints
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "password123"}'
 ```
 
-## API Documentation
+## 🛠️ Development Commands
 
-Once the API Gateway is running, you can access the API at:
-- Main API: http://localhost:3000
+### Database Management
 
-## Troubleshooting
+```bash
+# Generate Prisma clients
+npm run prisma:profiles:generate
+npm run prisma:rooms:generate
+npm run prisma:reviews:generate
+npm run prisma:roommate-matching:generate
+npm run prisma:notifications:generate
 
-### Database Connection Issues
-1. Ensure Docker services are running: `docker-compose ps`
-2. Check database credentials in `.env` files
-3. Verify Prisma schema and migrations are up to date
+# Run database migrations
+npm run prisma:profiles:migrate
+npm run prisma:rooms:migrate
+npm run prisma:reviews:migrate
+npm run prisma:roommate-matching:migrate
 
-### Service Communication Issues
-1. Ensure all required services are running
-2. Check gRPC service configurations
-3. Verify RabbitMQ is running for message queuing
+# Push schema changes (MongoDB)
+npm run prisma:notifications:push
+```
 
-### Port Conflicts
-If you encounter port conflicts, update the port configurations in the respective service files and `.env` files.
+## 🔧 Troubleshooting
 
-## Development
+### Common Issues and Solutions
 
-This project uses:
-- **NestJS** - Node.js framework
-- **Prisma** - Database ORM
-- **gRPC** - Inter-service communication
-- **RabbitMQ** - Message queuing
-- **JWT** - Authentication
-- **Docker** - Containerization
+**1. Port Already in Use Error**
+```bash
+# Check what's using the port
+lsof -i :3000
 
-## License
+# Kill the process using the port
+kill -9 <PID>
+```
 
-This project is [MIT licensed](LICENSE).
+**2. Docker Services Won't Start**
+```bash
+# Stop all services
+docker-compose down
+
+# Remove volumes and restart (⚠️ This will delete data)
+docker-compose down -v
+docker-compose up -d
+
+# Check service logs
+docker-compose logs -f
+```
+
+**3. Database Connection Issues**
+- Ensure Docker services are running: `docker-compose ps`
+- Verify database credentials in `.env` files
+- Check if Prisma schema matches your database
+- Ensure migrations are up to date
+
+**4. Service Communication Problems**
+- Verify all required services are running
+- Check gRPC service configurations
+- Ensure RabbitMQ is accessible: http://localhost:15672
+- Check network connectivity between services
+
+**5. Prisma/Database Issues**
+```bash
+# Reset database (⚠️ This will delete all data)
+npm run prisma:profiles:migrate reset
+
+# Regenerate Prisma client
+npm run prisma:profiles:generate
+
+# Check database connection
+npm run prisma:profiles:studio
+```
+
+### Debugging Tips
+
+```bash
+# View Docker container logs
+docker-compose logs -f postgres
+docker-compose logs -f mongodb
+docker-compose logs -f rabbitmq
+
+# Debug individual services
+npm run start:profiles:debug
+npm run start:auth:debug
+
+# Check service status
+curl http://localhost:3000/health
+```
+
+## 🌐 API Documentation
+
+### Main Endpoints
+
+Once the API Gateway is running, all API requests go through:
+
+- **Base URL**: http://localhost:3000
+- **Authentication**: `/auth/login`, `/auth/register`
+- **User Profiles**: `/profiles`
+- **Room Listings**: `/rooms`
+- **Roommate Matching**: `/roommate-matching`
+- **Reviews**: `/reviews`
+- **Notifications**: `/notifications`
+
+### Authentication
+
+Most endpoints require authentication. Include the JWT token in the Authorization header:
+
+```bash
+Authorization: Bearer <your-jwt-token>
+```
+
+## 📦 Project Structure
+
+```
+roommate-matching-backend/
+├── apps/                          # Microservices
+│   ├── api-gateway/              # Main API gateway
+│   ├── auth/                     # Authentication service
+│   ├── profiles/                 # User profiles service
+│   ├── rooms/                    # Room management service
+│   ├── roommate-matching/        # Matching algorithms
+│   ├── reviews/                  # Reviews and ratings
+│   └── notifications/            # Notification service
+├── libs/                         # Shared libraries
+│   ├── common/                   # Common utilities
+│   └── photos/                   # Photo handling
+├── docker/                       # Docker configurations
+├── docker-compose.yml            # Infrastructure setup
+└── package.json                  # Dependencies and scripts
+```
