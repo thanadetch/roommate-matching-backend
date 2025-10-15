@@ -7,75 +7,67 @@ import { CreateNotificationDto, UpdateNotificationDto } from './dto';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  // Create a new notification
   @MessagePattern('notifications.create')
-  async create(@Payload() createNotificationDto: CreateNotificationDto) {
+  create(@Payload() createNotificationDto: CreateNotificationDto) {
     return this.notificationsService.create(createNotificationDto);
   }
 
-  // Get all notifications
   @MessagePattern('notifications.findAll')
-  async findAll() {
+  findAll() {
     return this.notificationsService.findAll();
   }
 
-  // Get notifications by user ID
   @MessagePattern('notifications.findByUserId')
-  async findByUserId(@Payload() data: { userId: string }) {
-    return this.notificationsService.findByUserId(data.userId);
+  findByUserId(@Payload() userId: string) {
+    return this.notificationsService.findByUserId(userId);
   }
 
-  // Get unread notifications by user ID
-  @MessagePattern('notifications.findUnread')
-  async findUnread(@Payload() data: { userId: string }) {
-    return this.notificationsService.findUnreadByUserId(data.userId);
+  @MessagePattern('notifications.findUnreadByUserId')
+  findUnreadByUserId(@Payload() userId: string) {
+    return this.notificationsService.findUnreadByUserId(userId);
   }
 
-  // Get notification count by user ID
-  @MessagePattern('notifications.getCount')
-  async getCount(@Payload() data: { userId: string }) {
-    return this.notificationsService.getCountByUserId(data.userId);
-  }
-
-  // Get notification by ID
   @MessagePattern('notifications.findOne')
-  async findOne(@Payload() data: { id: string }) {
-    const notification = await this.notificationsService.findOne(data.id);
-    if (!notification) {
-      throw new Error('Notification not found');
-    }
-    return notification;
+  findOne(@Payload() id: string) {
+    return this.notificationsService.findOne(id);
   }
 
-  // Update notification
   @MessagePattern('notifications.update')
-  async update(
-    @Payload() data: { id: string; updateData: UpdateNotificationDto },
+  update(
+    @Payload()
+    data: {
+      id: string;
+      updateNotificationDto: UpdateNotificationDto;
+    },
   ) {
-    return this.notificationsService.update(data.id, data.updateData);
+    return this.notificationsService.update(
+      data.id,
+      data.updateNotificationDto,
+    );
   }
 
-  // Mark notification as read
   @MessagePattern('notifications.markAsRead')
-  async markAsRead(@Payload() data: { id: string }) {
-    return this.notificationsService.markAsRead(data.id);
+  markAsRead(@Payload() id: string) {
+    return this.notificationsService.markAsRead(id);
   }
 
-  // Mark all user notifications as read
-  @MessagePattern('notifications.markAllAsRead')
-  async markAllAsRead(@Payload() data: { userId: string }) {
-    return this.notificationsService.markAllAsReadByUserId(data.userId);
+  @MessagePattern('notifications.markAllAsReadByUserId')
+  markAllAsReadByUserId(@Payload() userId: string) {
+    return this.notificationsService.markAllAsReadByUserId(userId);
   }
 
-  // Delete notification
   @MessagePattern('notifications.remove')
-  async remove(@Payload() data: { id: string }) {
-    return this.notificationsService.remove(data.id);
+  remove(@Payload() id: string) {
+    return this.notificationsService.remove(id);
   }
 
-  // Delete all notifications for a user
-  @MessagePattern('notifications.removeAllByUser')
-  async removeAllByUser(@Payload() data: { userId: string }) {
-    return this.notificationsService.removeAllByUserId(data.userId);
+  @MessagePattern('notifications.removeAllByUserId')
+  removeAllByUserId(@Payload() userId: string) {
+    return this.notificationsService.removeAllByUserId(userId);
+  }
+
+  @MessagePattern('notifications.getCountByUserId')
+  getCountByUserId(@Payload() userId: string) {
+    return this.notificationsService.getCountByUserId(userId);
   }
 }

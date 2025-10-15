@@ -1,23 +1,32 @@
-import { IsString, IsEnum, IsOptional, IsNotEmpty } from 'class-validator';
-import { NotificationType, NotificationStatus } from '../../generated/prisma';
+import { IsString, IsOptional, IsEnum } from 'class-validator';
+
+export enum NotificationType {
+  INTEREST_REQUEST = 'INTEREST_REQUEST',
+  MATCH_FOUND = 'MATCH_FOUND',
+  MESSAGE = 'MESSAGE',
+  REVIEW = 'REVIEW',
+  REMINDER = 'REMINDER',
+}
+
+export enum NotificationStatus {
+  UNREAD = 'UNREAD',
+  READ = 'READ',
+}
 
 export class CreateNotificationDto {
   @IsString()
-  @IsNotEmpty()
   userId: string;
 
   @IsEnum(NotificationType)
   type: NotificationType;
 
+  @IsEnum(NotificationStatus)
+  @IsOptional()
+  status?: NotificationStatus;
+
   @IsString()
-  @IsNotEmpty()
   title: string;
 
   @IsString()
-  @IsNotEmpty()
   message: string;
-
-  @IsOptional()
-  @IsEnum(NotificationStatus)
-  status?: NotificationStatus;
 }

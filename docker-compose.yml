@@ -15,12 +15,17 @@ services:
       - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   mongodb:
-    image: mongo:latest
+    build:
+      context: ./docker/mongodb
+      args:
+        MONGO_VERSION: latest
     container_name: roommate_matching_mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: roommate_matching
+      MONGO_REPLICA_HOST: localhost
+      MONGO_REPLICA_PORT: 27017
     ports:
       - "27017:27017"
     volumes:

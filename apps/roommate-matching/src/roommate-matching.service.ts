@@ -14,8 +14,12 @@ import { UpdateInterestStatusDto } from './dto/update-interest-status.dto';
 import { InterestResponseDto } from './dto/interest-response.dto';
 import { InterestCountsResponseDto } from './dto/interest-counts-response.dto';
 import { MatchesResponseDto } from './dto/matches-response.dto';
-import { RoomResponseDto } from '../../rooms/src/dto/room-response.dto';
+import { RoomResponseDto } from '../../rooms/src/dto';
 import { ProfileResponseDto } from '../../profiles/src/dto';
+import {
+  CreateNotificationDto,
+  NotificationType,
+} from '../../notifications/src/dto';
 import { InterestStatus } from '@app/common';
 import { Interest } from '../generated/prisma';
 import { ProfilesGrpcService } from '@app/common';
@@ -28,6 +32,8 @@ export class RoommateMatchingService implements OnModuleInit {
     private readonly prisma: PrismaService,
     @Inject('ROOMS_SERVICE')
     private readonly roomsClient: ClientProxy,
+    @Inject('NOTIFICATIONS_SERVICE')
+    private readonly notificationsClient: ClientProxy,
     @Inject('PROFILES_PACKAGE')
     private readonly profilesClient: ClientGrpc,
   ) {}
@@ -126,6 +132,27 @@ export class RoommateMatchingService implements OnModuleInit {
       this.getProfileDetails(hostId),
       this.getProfileDetails(seekerId),
     ]);
+
+    // Send notification to host about new interest request
+    if (roomDetails && seekerProfile) {
+      const notificationDto: CreateNotificationDto = {
+        userId: hostId,
+        type: NotificationType.INTEREST_REQUEST,
+        title: 'New Interest Request',
+        message: `${seekerProfile.firstName} ${seekerProfile.lastName} is interested in "${roomDetails.title}"`,
+      };
+
+      try {
+        await firstValueFrom(
+          this.notificationsClient.send(
+            'notifications.create',
+            notificationDto,
+          ),
+        );
+      } catch (error) {
+        console.warn('Failed to send notification:', error);
+      }
+    }
 
     return {
       ...newInterest,
@@ -314,9 +341,32 @@ export class RoommateMatchingService implements OnModuleInit {
 
   // Accept interest (convenience method)
   async acceptInterest(interestId: string): Promise<InterestResponseDto> {
-    return this.updateInterestStatus(interestId, {
+    const result = await this.updateInterestStatus(interestId, {
       status: InterestStatus.ACCEPTED,
     });
+
+    // Send notification to seeker about new match
+    if (result.room && result.seeker && result.host) {
+      const notificationDto: CreateNotificationDto = {
+        userId: result.seekerId,
+        type: NotificationType.MATCH_FOUND,
+        title: 'New Match!',
+        message: `You matched with ${result.host.firstName} ${result.host.lastName} for "${result.room.title}"`,
+      };
+
+      try {
+        await firstValueFrom(
+          this.notificationsClient.send(
+            'notifications.create',
+            notificationDto,
+          ),
+        );
+      } catch (error) {
+        console.warn('Failed to send notification:', error);
+      }
+    }
+
+    return result;
   }
 
   // Reject interest (convenience method)
