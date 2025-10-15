@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../src/prisma.service';
-import { Prisma, RoomListing } from '../generated/prisma';
-import {
-  CreateRoomDto,
-  UpdateRoomDto,
-  BrowseRoomsDto,
-  RoomResponseDto,
-} from './dto';
+import { PrismaService } from './prisma.service';
+import { RoomListing } from '../generated/prisma';
+import { BrowseRoomsDto, CreateRoomDto, UpdateRoomDto } from './dto';
 
 @Injectable()
 export class RoomsService {
