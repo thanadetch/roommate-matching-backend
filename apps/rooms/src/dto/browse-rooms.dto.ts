@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsBoolean,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsBoolean } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class BrowseRoomsDto {
@@ -13,12 +8,12 @@ export class BrowseRoomsDto {
 
   @IsNumber()
   @IsOptional()
-  @Transform(({ value }) => value ? Number(value) : undefined)
+  @Transform(({ value }) => (value ? Number(value) : undefined))
   minPrice?: number;
 
   @IsNumber()
   @IsOptional()
-  @Transform(({ value }) => value ? Number(value) : undefined)
+  @Transform(({ value }) => (value ? Number(value) : undefined))
   maxPrice?: number;
 
   @IsBoolean()
@@ -29,7 +24,7 @@ export class BrowseRoomsDto {
   @IsBoolean()
   @IsOptional()
   @Transform(({ value }) => value === 'true' || value === true)
-  petFriendly?: boolean;
+  noPets?: boolean;
 
   @IsBoolean()
   @IsOptional()

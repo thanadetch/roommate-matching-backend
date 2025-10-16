@@ -37,7 +37,7 @@ export class UpdateRoomDto {
 
   @IsBoolean()
   @IsOptional()
-  petFriendly?: boolean;
+  noPets?: boolean;
 
   @IsBoolean()
   @IsOptional()

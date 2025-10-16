@@ -12,8 +12,8 @@ import {
 export class RoomsGatewayService {
   constructor(@Inject('ROOMS_SERVICE') private readonly client: ClientProxy) {}
 
-  createRoom(dto: CreateRoomDto): Observable<RoomResponseDto> {
-    return this.client.send('rooms.create', dto);
+  createRoom(createRoomData: CreateRoomDto): Observable<RoomResponseDto> {
+    return this.client.send('rooms.create', createRoomData);
   }
 
   getAllRooms(): Observable<RoomResponseDto[]> {
@@ -24,15 +24,18 @@ export class RoomsGatewayService {
     return this.client.send('rooms.findOne', id);
   }
 
-  updateRoom(id: string, dto: UpdateRoomDto): Observable<RoomResponseDto> {
-    return this.client.send('rooms.update', { id, data: dto });
+  updateRoom(
+    id: string,
+    updateRoomData: UpdateRoomDto,
+  ): Observable<RoomResponseDto> {
+    return this.client.send('rooms.update', { id, data: updateRoomData });
   }
 
   deleteRoom(id: string): Observable<void> {
     return this.client.send('rooms.remove', id);
   }
 
-  browseRooms(query: BrowseRoomsDto): Observable<RoomResponseDto[]> {
-    return this.client.send('rooms.browse', query);
+  browseRooms(browseFilters: BrowseRoomsDto): Observable<RoomResponseDto[]> {
+    return this.client.send('rooms.browse', browseFilters);
   }
 }

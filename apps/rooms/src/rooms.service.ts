@@ -26,15 +26,8 @@ export class RoomsService {
 
   // FILTER / BROWSE
   async browseRooms(filters: BrowseRoomsDto): Promise<RoomListing[]> {
-    const {
-      location,
-      minPrice,
-      maxPrice,
-      noSmoking,
-      petFriendly,
-      quiet,
-      nightOwl,
-    } = filters;
+    const { location, minPrice, maxPrice, noSmoking, noPets, quiet, nightOwl } =
+      filters;
 
     return this.prisma.roomListing.findMany({
       where: {
@@ -44,7 +37,7 @@ export class RoomsService {
         ...(minPrice && { pricePerMonth: { gte: Number(minPrice) } }),
         ...(maxPrice && { pricePerMonth: { lte: Number(maxPrice) } }),
         ...(noSmoking !== undefined && { noSmoking }),
-        ...(petFriendly !== undefined && { petFriendly }),
+        ...(noPets !== undefined && { noPets }),
         ...(quiet !== undefined && { quiet }),
         ...(nightOwl !== undefined && { nightOwl }),
       },

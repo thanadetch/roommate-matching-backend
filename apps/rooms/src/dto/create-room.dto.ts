@@ -33,7 +33,7 @@ export class CreateRoomDto {
 
   @IsBoolean()
   @IsOptional()
-  petFriendly?: boolean;
+  noPets?: boolean;
 
   @IsBoolean()
   @IsOptional()
