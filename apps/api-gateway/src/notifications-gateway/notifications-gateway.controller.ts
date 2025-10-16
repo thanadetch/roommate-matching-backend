@@ -12,6 +12,7 @@ import {
   CreateNotificationDto,
   UpdateNotificationDto,
 } from '../../../notifications/src/dto';
+import { Public } from '../auth-gateway/decorators/public.decorator';
 
 @Controller('notifications')
 export class NotificationsGatewayController {
@@ -19,11 +20,13 @@ export class NotificationsGatewayController {
     private readonly notificationsGatewayService: NotificationsGatewayService,
   ) {}
 
+  @Public()
   @Post()
   create(@Body() createNotificationDto: CreateNotificationDto) {
     return this.notificationsGatewayService.create(createNotificationDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.notificationsGatewayService.findAll();
