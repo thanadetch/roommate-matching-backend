@@ -26,6 +26,7 @@ services:
       MONGO_INITDB_DATABASE: roommate_matching
       MONGO_REPLICA_HOST: localhost
       MONGO_REPLICA_PORT: 27017
+      MONGO_COMMAND: mongosh
     ports:
       - "27017:27017"
     volumes:
