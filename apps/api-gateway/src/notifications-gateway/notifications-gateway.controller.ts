@@ -20,13 +20,11 @@ export class NotificationsGatewayController {
     private readonly notificationsGatewayService: NotificationsGatewayService,
   ) {}
 
-  @Public()
   @Post()
   create(@Body() createNotificationDto: CreateNotificationDto) {
     return this.notificationsGatewayService.create(createNotificationDto);
   }
 
-  @Public()
   @Get()
   findAll() {
     return this.notificationsGatewayService.findAll();
