@@ -42,7 +42,7 @@ export class NotificationsGatewayService {
 
   // Get notification by ID
   findOne(id: string) {
-    return this.notificationsClient.send('notifications.findOne', { id });
+    return this.notificationsClient.send('notifications.findOne', id);
   }
 
   // Update notification
@@ -55,7 +55,7 @@ export class NotificationsGatewayService {
 
   // Mark notification as read
   markAsRead(id: string) {
-    return this.notificationsClient.send('notifications.markAsRead', { id });
+    return this.notificationsClient.send('notifications.markAsRead', id);
   }
 
   // Mark all user notifications as read
@@ -68,7 +68,7 @@ export class NotificationsGatewayService {
 
   // Delete notification
   remove(id: string) {
-    return this.notificationsClient.send('notifications.remove', { id });
+    return this.notificationsClient.send('notifications.remove', id);
   }
 
   // Delete all notifications for a user
