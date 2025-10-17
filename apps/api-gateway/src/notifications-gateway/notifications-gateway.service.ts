@@ -4,7 +4,6 @@ import {
   CreateNotificationDto,
   UpdateNotificationDto,
 } from '../../../notifications/src/dto';
-import { Public } from '../auth-gateway/decorators/public.decorator';
 
 @Injectable()
 export class NotificationsGatewayService {
@@ -28,21 +27,17 @@ export class NotificationsGatewayService {
 
   // Get notifications by user ID
   findByUserId(userId: string) {
-    return this.notificationsClient.send('notifications.findByUserId', {
-      userId,
-    });
+    return this.notificationsClient.send('notifications.findByUserId', userId);
   }
 
   // Get unread notifications by user ID
   findUnread(userId: string) {
-    return this.notificationsClient.send('notifications.findUnread', {
-      userId,
-    });
+    return this.notificationsClient.send('notifications.findUnread', userId);
   }
 
   // Get notification count by user ID
   getCount(userId: string) {
-    return this.notificationsClient.send('notifications.getCount', { userId });
+    return this.notificationsClient.send('notifications.getCount', userId);
   }
 
   // Get notification by ID
@@ -78,8 +73,9 @@ export class NotificationsGatewayService {
 
   // Delete all notifications for a user
   removeAllByUser(userId: string) {
-    return this.notificationsClient.send('notifications.removeAllByUser', {
+    return this.notificationsClient.send(
+      'notifications.removeAllByUser',
       userId,
-    });
+    );
   }
 }
