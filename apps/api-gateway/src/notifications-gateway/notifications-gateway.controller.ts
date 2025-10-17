@@ -64,7 +64,7 @@ export class NotificationsGatewayController {
 
   @Put('user/:userId/read-all')
   markAllAsRead(@Param('userId') userId: string) {
-    return this.notificationsGatewayService.markAllAsRead(userId);
+    return this.notificationsGatewayService.markAllAsReadByUserId(userId);
   }
 
   @Delete(':id')

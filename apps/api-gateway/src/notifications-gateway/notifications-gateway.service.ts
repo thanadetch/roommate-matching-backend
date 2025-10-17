@@ -64,10 +64,11 @@ export class NotificationsGatewayService {
   }
 
   // Mark all user notifications as read
-  markAllAsRead(userId: string) {
-    return this.notificationsClient.send('notifications.markAllAsRead', {
+  markAllAsReadByUserId(userId: string) {
+    return this.notificationsClient.send(
+      'notifications.markAllAsReadByUserId',
       userId,
-    });
+    );
   }
 
   // Delete notification
