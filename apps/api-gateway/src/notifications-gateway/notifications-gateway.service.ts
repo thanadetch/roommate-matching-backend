@@ -31,13 +31,19 @@ export class NotificationsGatewayService {
   }
 
   // Get unread notifications by user ID
-  findUnread(userId: string) {
-    return this.notificationsClient.send('notifications.findUnread', userId);
+  findUnreadByUserId(userId: string) {
+    return this.notificationsClient.send(
+      'notifications.findUnreadByUserId',
+      userId,
+    );
   }
 
   // Get notification count by user ID
-  getCount(userId: string) {
-    return this.notificationsClient.send('notifications.getCount', userId);
+  getCountByUserId(userId: string) {
+    return this.notificationsClient.send(
+      'notifications.getCountByUserId',
+      userId,
+    );
   }
 
   // Get notification by ID
@@ -72,9 +78,9 @@ export class NotificationsGatewayService {
   }
 
   // Delete all notifications for a user
-  removeAllByUser(userId: string) {
+  removeAllByUserId(userId: string) {
     return this.notificationsClient.send(
-      'notifications.removeAllByUser',
+      'notifications.removeAllByUserId',
       userId,
     );
   }

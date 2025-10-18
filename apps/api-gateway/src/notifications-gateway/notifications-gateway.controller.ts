@@ -35,13 +35,13 @@ export class NotificationsGatewayController {
   }
 
   @Get('user/:userId/unread')
-  findUnread(@Param('userId') userId: string) {
-    return this.notificationsGatewayService.findUnread(userId);
+  findUnreadByUserId(@Param('userId') userId: string) {
+    return this.notificationsGatewayService.findUnreadByUserId(userId);
   }
 
   @Get('user/:userId/count')
-  getCount(@Param('userId') userId: string) {
-    return this.notificationsGatewayService.getCount(userId);
+  getCountByUserId(@Param('userId') userId: string) {
+    return this.notificationsGatewayService.getCountByUserId(userId);
   }
 
   @Get(':id')
@@ -73,7 +73,7 @@ export class NotificationsGatewayController {
   }
 
   @Delete('user/:userId/all')
-  removeAllByUser(@Param('userId') userId: string) {
-    return this.notificationsGatewayService.removeAllByUser(userId);
+  removeAllByUserId(@Param('userId') userId: string) {
+    return this.notificationsGatewayService.removeAllByUserId(userId);
   }
 }
