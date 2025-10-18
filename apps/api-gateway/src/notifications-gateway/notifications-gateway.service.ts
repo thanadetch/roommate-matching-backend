@@ -55,7 +55,7 @@ export class NotificationsGatewayService {
   update(id: string, updateNotificationDto: UpdateNotificationDto) {
     return this.notificationsClient.send('notifications.update', {
       id,
-      updateData: updateNotificationDto,
+      updateNotificationDto,
     });
   }
 
