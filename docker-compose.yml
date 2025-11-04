@@ -13,21 +13,22 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - roommate_network
 
   mongodb:
-    build:
-      context: ./docker/mongodb
-      args:
-        MONGO_VERSION: latest
+    image: prismagraphql/mongo-single-replica:5.0.3
     container_name: roommate_matching_mongodb
     environment:
-      MONGO_REPLICA_HOST: localhost
-      MONGO_REPLICA_PORT: 27017
-      MONGO_COMMAND: mongosh
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: roommate_matching
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - roommate_network
 
   rabbitmq:
     image: rabbitmq:4.1.4-management
@@ -45,8 +46,14 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - roommate_network
 
 volumes:
   postgres_data:
   mongodb_data:
   rabbitmq_data:
+
+networks:
+  roommate_network:
+    external: true

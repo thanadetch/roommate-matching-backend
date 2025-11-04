@@ -11,16 +11,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       isGlobal: true,
       envFilePath: './apps/roommate-matching/.env',
     }),
-    ClientsModule.register([
-      {
-        name: 'PROFILES_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'profiles',
-          protoPath: 'libs/photos/src/profiles.proto',
-        },
-      },
-    ]),
     ClientsModule.registerAsync([
       {
         name: 'ROOMS_SERVICE',
@@ -52,6 +42,21 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
               'notifications_queue',
           },
         }),
+      },
+      {
+        name: 'PROFILES_PACKAGE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: 'profiles',
+            protoPath: 'libs/photos/src/profiles.proto',
+            url:
+              configService.get<string>('PROFILES_GRPC_URL') ||
+              'localhost:5001',
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],

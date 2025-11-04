@@ -19,14 +19,21 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       }),
       inject: [ConfigService], // Inject ConfigService
     }),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'PROFILES_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'profiles',
-          protoPath: 'libs/photos/src/profiles.proto',
-        },
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: 'profiles',
+            protoPath: 'libs/photos/src/profiles.proto',
+            url:
+              configService.get<string>('PROFILES_GRPC_URL') ||
+              'localhost:5001',
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],

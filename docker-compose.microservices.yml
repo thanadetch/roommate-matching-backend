@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    container_name: api_gateway_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - AUTH_QUEUE_NAME=auth_queue
+      - ROOM_QUEUE_NAME=rooms_queue
+      - ROOMMATE_MATCHING_QUEUE_NAME=roommate_matching_queue
+      - REVIEWS_QUEUE_NAME=reviews_queue
+      - NOTIFICATIONS_QUEUE_NAME=notifications_queue
+      - JWT_SECRET=8014fb99a6ecd0291a8f0eaacef51f4d
+      - PROFILES_GRPC_URL=profiles:5001
+    networks:
+      - roommate_network
+
+  auth:
+    container_name: auth_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: auth
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/roommate_matching?schema=profiles
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - QUEUE_NAME=auth_queue
+      - JWT_SECRET=8014fb99a6ecd0291a8f0eaacef51f4d
+      - PROFILES_GRPC_URL=profiles:5001
+    networks:
+      - roommate_network
+
+  profiles:
+    container_name: profiles_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: profiles
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/roommate_matching?schema=profiles
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - GRPC_URL=profiles:5001
+    networks:
+      - roommate_network
+
+  rooms:
+    container_name: rooms_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: rooms
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/roommate_matching?schema=rooms
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - QUEUE_NAME=rooms_queue
+    networks:
+      - roommate_network
+
+  notifications:
+    container_name: notifications_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: notifications
+    environment:
+      - DATABASE_URL=mongodb://user:password@mongodb:27017/roommate_matching?authSource=admin&directConnection=true
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - QUEUE_NAME=notifications_queue
+    networks:
+      - roommate_network
+
+  reviews:
+    container_name: reviews_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: reviews
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/roommate_matching?schema=reviews
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - QUEUE_NAME=reviews_queue
+      - PROFILES_GRPC_URL=profiles:5001
+    networks:
+      - roommate_network
+
+  roommate-matching:
+    container_name: roommate_matching_service
+    build:
+      context: .
+      args:
+        SERVICE_NAME: roommate-matching
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/roommate_matching?schema=roommate_matching
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - QUEUE_NAME=roommate_matching_queue
+      - ROOM_QUEUE_NAME=rooms_queue
+      - NOTIFICATIONS_QUEUE_NAME=notifications_queue
+      - PROFILES_GRPC_URL=profiles:5001
+    networks:
+      - roommate_network
+
+networks:
+  roommate_network:
+    external: true

@@ -11,6 +11,7 @@ async function bootstrap() {
       options: {
         package: 'profiles',
         protoPath: 'libs/photos/src/profiles.proto',
+        url: process.env.GRPC_URL,
         onLoadPackageDefinition: (pkg, server) => {
           new ReflectionService(pkg).addToServer(server);
         },
