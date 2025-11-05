@@ -45,7 +45,9 @@ Before starting, ensure you have the following installed:
 - **Docker** and **Docker Compose** - [Download here](https://docs.docker.com/get-docker/)
 - **Git** - Version control
 
-## 🚀 Quick Start Guide
+## 🚀 Quick Start Guide (Development Setup)
+
+> **💡 Tip**: For production or easier setup, see the [Docker-Based Deployment](#-docker-based-deployment-recommended) section below.
 
 ### Step 1: Clone the Repository
 
@@ -120,7 +122,71 @@ npm run prisma:roommate-matching:generate && npm run prisma:roommate-matching:mi
 npm run prisma:notifications:generate && npm run prisma:notifications:push
 ```
 
-## 🏃‍♂️ Running the Application
+## 🐳 Docker-Based Deployment (Recommended)
+
+For the easiest setup, you can run the entire system using Docker containers:
+
+### Step 1: Create Docker Network
+
+First, create a custom Docker network for the microservices:
+
+```bash
+# Create the network
+docker network create roommate_network
+```
+
+### Step 2: Start Infrastructure Services
+
+Start the infrastructure services (PostgreSQL, MongoDB, RabbitMQ):
+
+```bash
+# Start infrastructure with new simple MongoDB
+docker-compose up -d
+```
+
+### Step 3: Start All Microservices
+
+Start all microservices using the microservices compose file:
+
+```bash
+# Start microservices
+docker-compose -f docker-compose.microservices.yml up -d
+```
+
+### Step 4: Verify Deployment
+
+Check that all services are running:
+
+```bash
+# Check running containers
+docker ps
+
+# Check logs if needed
+docker-compose logs -f
+docker-compose -f docker-compose.microservices.yml logs -f
+```
+
+### Step 5: Access the Application
+
+- **API Gateway**: http://localhost:3000 (Main HTTP entry point)
+- **RabbitMQ Management**: http://localhost:15672 (admin/admin123)
+
+### Stopping the Services
+
+To stop all services:
+
+```bash
+# Stop microservices
+docker-compose -f docker-compose.microservices.yml down
+
+# Stop infrastructure
+docker-compose down
+
+# Optional: Remove the network
+docker network rm roommate_network
+```
+
+## 🏃‍♂️ Running the Application (Development Mode)
 
 ### Option 1: Start All Services (Recommended for Full Development)
 
